@@ -32,15 +32,62 @@ export function LyricsView({ id }: { id: string }) {
   const formatLyrics = (content: string) => {
     // Remove notes section from display content
     const contentWithoutNotes = content.replace(/<notes>.*?<\/notes>/s, '');
-
-    return contentWithoutNotes.split(/\r\n\r\n/).map((paragraph, index) => {
+    
+    // Split by double line breaks to get paragraphs
+    const paragraphs = contentWithoutNotes.split(/\r\n\r\n/);
+    
+    // Process each paragraph and wrap verses in interactive spans
+    return paragraphs.map((paragraph, index) => {
+      // Store the original plain text (without tags) for copying
+      // Remove any formatting tags for clipboard copy
+      const plainTextVerse = paragraph.replace(/<c>(.*?)<\/c>/g, '$1')
+                                    .replace(/<cr>(.*?)<\/cr>/g, '$1')
+                                    .replace(/<chorus>(.*?)<\/chorus>/g, '$1');
+      
+      // Format the chorus tags for display only
       const formattedParagraph = paragraph.replace(
         /<c>(.*?)<\/c>/g,
         '<strong>$1</strong>'
       );
-      return `${formattedParagraph}${index < contentWithoutNotes.split(/\r\n\r\n/).length - 1 ? '\n\n' : ''}`;
+      
+      // Wrap the entire paragraph in a clickable verse div
+      // Replace line breaks with <br> tags for HTML rendering
+      const verseHtml = formattedParagraph.replace(/\r\n/g, '<br>');
+      
+      return `<div class="verse-block cursor-pointer hover:bg-[#d63736]/20 rounded px-2 py-1 mb-4 transition-colors" 
+                  data-verse="${plainTextVerse.replace(/"/g, '&quot;')}" 
+                  onclick="window.copyVerse(this.getAttribute('data-verse'))">${verseHtml}</div>`;
     }).join('');
   };
+
+  // Function to handle verse copying
+  const copyVerseToClipboard = (verse: string) => {
+    try {
+      // Process any remaining escape sequences for proper line breaks
+      const processedVerse = verse
+        .replace(/\\r\\n/g, '\n') // Replace escaped \r\n with actual line breaks
+        .replace(/\\n/g, '\n')    // Replace escaped \n with actual line breaks
+        .replace(/\\"/g, '"');    // Replace escaped quotes
+      
+      navigator.clipboard.writeText(processedVerse);
+      toast.success('Verse copied to clipboard!');
+    } catch (err) {
+      toast.error('Failed to copy verse');
+      console.error('Error copying verse:', err);
+    }
+  };
+
+  useEffect(() => {
+    // Attach the copyVerse function to window for the inline onclick handlers
+    window.copyVerse = (verse: string) => {
+      copyVerseToClipboard(verse);
+    };
+    
+    // Cleanup function
+    return () => {
+      delete window.copyVerse;
+    };
+  }, []);
 
   if (!song) {
     return <div>Loading...</div>;
@@ -131,7 +178,14 @@ export function LyricsView({ id }: { id: string }) {
               <button
                 className="absolute right-4 top-4 z-10 flex items-center gap-2 text-gray-400 hover:text-white bg-[#27272A] px-3 py-2 rounded"
                 onClick={() => {
-                  navigator.clipboard.writeText(song.Content);
+                  // Remove all formatting tags for plain text copy
+                  const plainContent = song.Content
+                    .replace(/<notes>.*?<\/notes>/s, '')
+                    .replace(/<c>(.*?)<\/c>/g, '$1')
+                    .replace(/<cr>(.*?)<\/cr>/g, '$1')
+                    .replace(/<chorus>(.*?)<\/chorus>/g, '$1');
+                  
+                  navigator.clipboard.writeText(plainContent);
                   toast.success('Content copied to clipboard!');
                 }}
               >
@@ -147,7 +201,14 @@ export function LyricsView({ id }: { id: string }) {
               <button
                 className="absolute right-4 top-4 z-10 flex items-center gap-2 text-gray-400 hover:text-white bg-[#27272A] px-3 py-2 rounded"
                 onClick={() => {
-                  navigator.clipboard.writeText(song.Content);
+                  // Remove all formatting tags for plain text copy
+                  const plainContent = song.Content
+                    .replace(/<notes>.*?<\/notes>/s, '')
+                    .replace(/<c>(.*?)<\/c>/g, '$1')
+                    .replace(/<cr>(.*?)<\/cr>/g, '$1')
+                    .replace(/<chorus>(.*?)<\/chorus>/g, '$1');
+                  
+                  navigator.clipboard.writeText(plainContent);
                   toast.success('Content copied to clipboard!');
                 }}
               >
@@ -163,7 +224,14 @@ export function LyricsView({ id }: { id: string }) {
               <button
                 className="absolute right-4 top-4 z-10 flex items-center gap-2 text-gray-400 hover:text-white bg-[#27272A] px-3 py-2 rounded"
                 onClick={() => {
-                  navigator.clipboard.writeText(song.Content);
+                  // Remove all formatting tags for plain text copy
+                  const plainContent = song.Content
+                    .replace(/<notes>.*?<\/notes>/s, '')
+                    .replace(/<c>(.*?)<\/c>/g, '$1')
+                    .replace(/<cr>(.*?)<\/cr>/g, '$1')
+                    .replace(/<chorus>(.*?)<\/chorus>/g, '$1');
+                  
+                  navigator.clipboard.writeText(plainContent);
                   toast.success('Content copied to clipboard!');
                 }}
               >
@@ -180,4 +248,11 @@ export function LyricsView({ id }: { id: string }) {
       </main>
     </div>
   );
+}
+
+// Add TypeScript declaration for the global window object
+declare global {
+  interface Window {
+    copyVerse: (verse: string) => void;
+  }
 }
