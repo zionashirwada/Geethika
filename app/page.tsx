@@ -30,11 +30,27 @@ export default function HomePage() {
   }, [searchQuery]);
 
   return (
-    <div className="flex min-h-screen p-4 lg:px-14">
-      <Sidebar isOpen={true} />
+    <div className="flex min-h-screen p-4 lg:px-14 relative">
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block">
+        <Sidebar isOpen={true} />
+      </div>
+      
+      {/* Mobile Sidebar and Overlay */}
+      {isMenuOpen && (
+        <>
+          <div 
+            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            onClick={() => setIsMenuOpen(false)}
+          />
+          <div className="md:hidden fixed z-50">
+            <Sidebar isOpen={true} onClose={() => setIsMenuOpen(false)} />
+          </div>
+        </>
+      )}
 
       {/* Main Content */}
-      <main className="main-content flex-1 ml-[280px]">
+      <main className="main-content flex-1 ml-[280px] md:ml-[280px]">
         <div className="search-container">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -70,10 +86,10 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* Mobile Menu Button */}
+      {/* Hamburger Button for Mobile */}
       <button
-        className="mobile-menu-button"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="md:hidden fixed top-4 left-4 z-50 bg-[#d63736] hover:bg-[#e64736] p-2 rounded-lg text-white shadow-lg"
+        onClick={() => setIsMenuOpen(true)}
       >
         <Menu size={24} />
       </button>

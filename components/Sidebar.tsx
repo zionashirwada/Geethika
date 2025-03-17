@@ -5,15 +5,26 @@ import {
   Music,
   Info,
   PlusCircle,
+  X, // added for mobile close button
 } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
+  onClose?: () => void; // new optional prop
 }
 
-export default function Sidebar({ isOpen }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <nav className={`sidebar ${isOpen ? 'open' : 'collapsed'} bg-[#161616] m-4 ml-10 my-10 rounded-2xl fixed left-0 top-0 transition-all duration-300`}>
+      {/* Mobile close button */}
+      {onClose && (
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 md:hidden bg-[#282828] hover:bg-[#383838] p-2 rounded-lg text-white"
+        >
+          <X size={20} />
+        </button>
+      )}
       <div className="flex items-center justify-center mb-8 p-0 m-0 transition-all duration-300">
         <Image 
           src={isOpen ? "/logo.png" : "/icon.png"} 

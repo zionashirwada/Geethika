@@ -16,6 +16,7 @@ import {
   Headphones,
   ArrowLeft,
   Copy,
+  Menu, // imported for hamburger button
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getSongById } from '@/lib/songs';
@@ -26,6 +27,7 @@ export function LyricsView({ id }: { id: string }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('unicode');
   const [song, setSong] = useState<Song | undefined>(undefined);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const songData = getSongById(id);
@@ -48,12 +50,35 @@ export function LyricsView({ id }: { id: string }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#121212]">
-    
-    <Sidebar isOpen={true} />
+    <div className="flex min-h-screen relative">
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block">
+        <Sidebar isOpen={true} />
+      </div>
+
+      {/* Mobile Sidebar and Overlay */}
+      {isMenuOpen && (
+        <>
+          <div 
+            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            onClick={() => setIsMenuOpen(false)}
+          />
+          <div className="md:hidden fixed z-50">
+            <Sidebar isOpen={true} onClose={() => setIsMenuOpen(false)} />
+          </div>
+        </>
+      )}
+
+      {/* Hamburger Button for Mobile */}
+      <button
+        className="md:hidden fixed top-4 left-4 z-50 bg-[#d63736] hover:bg-[#e64736] p-2 rounded-full text-white shadow-lg"
+        onClick={() => setIsMenuOpen(true)}
+      >
+        <Menu size={24} />
+      </button>
 
       {/* Main Content */}
-      <main className="flex-1 ml-16 p-8">
+      <main className="flex-1 ml-16 p-8 md:ml-[280px]">
         <button 
           onClick={() => router.back()}
           className="text-gray-400 hover:text-white flex items-center gap-2 mb-6"
@@ -74,7 +99,7 @@ export function LyricsView({ id }: { id: string }) {
           </div>
 
           <Tabs defaultValue="unicode" className="w-full">
-            <TabsList className="bg-[#282828] mb-4">
+            <TabsList className="bg-[#161616] mb-4">
               <TabsTrigger 
                 value="unicode"
                 className="data-[state=active]:bg-[#d63736]"
@@ -104,7 +129,7 @@ export function LyricsView({ id }: { id: string }) {
                 Copy All
               </button>
               <div
-                className="w-full h-[500px] bg-[#282828] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap"
+                className="w-full rounded-xl bg-[#161616] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap"
                 dangerouslySetInnerHTML={{ __html: formatLyrics(song.Content) }}
               />
             </TabsContent>
@@ -117,7 +142,7 @@ export function LyricsView({ id }: { id: string }) {
                 Copy All
               </button>
               <div
-                className="w-full h-[500px] bg-[#282828] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap"
+                className="w-full rounded-xl bg-[#161616] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap"
                 dangerouslySetInnerHTML={{ __html: formatLyrics(song.Content) }}
               />
             </TabsContent>
@@ -130,7 +155,7 @@ export function LyricsView({ id }: { id: string }) {
                 Copy All
               </button>
               <div
-                className="w-full h-[500px] bg-[#282828] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap"
+                className="w-full rounded-xl bg-[#161616] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap"
                 dangerouslySetInnerHTML={{ __html: formatLyrics(song.Content) }}
               />
             </TabsContent>
