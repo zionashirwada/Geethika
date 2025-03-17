@@ -15,7 +15,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
-    <nav className={`sidebar ${isOpen ? 'open' : 'collapsed'} bg-[#161616] m-4 ml-10 my-10 rounded-2xl fixed left-0 top-0 transition-all duration-300`}>
+    <nav className={`sidebar ${isOpen ? 'open' : 'collapsed'} bg-[#161616] m-4 ml-10 my-10 rounded-2xl fixed left-0 top-0 transition-all duration-300 relative`}>
       {/* Mobile close button */}
       {onClose && (
         <button 
@@ -64,6 +64,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <PlusCircle size={20} />
         {isOpen && <span>Contribute</span>}
       </a>
+      <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-xs">
+        &copy; Developed by{' '}
+        <a 
+          href="https://zionashir.lk" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-[#d63736] hover:underline"
+        >
+          &nbsp;Zion Ashirwada
+        </a>
+      </div>
     </nav>
   );
 }
