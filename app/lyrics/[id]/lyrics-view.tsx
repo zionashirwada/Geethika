@@ -50,7 +50,7 @@ export function LyricsView({ id }: { id: string }) {
   return (
     <div className="flex min-h-screen bg-[#121212]">
     
-    <Sidebar isOpen={false} />
+    <Sidebar isOpen={true} />
 
       {/* Main Content */}
       <main className="flex-1 ml-16 p-8">
