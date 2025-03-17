@@ -6,6 +6,7 @@ import { Menu, Search } from 'lucide-react';
 import type { Song } from '@/lib/types';
 import { getAllSongs } from '@/lib/songs';
 import Sidebar from '@/components/Sidebar';
+import AnimatedSearchBar from '@/components/SearchBar';
 
 export default function LyricsPage() {
   const router = useRouter();
@@ -51,16 +52,11 @@ export default function LyricsPage() {
 
       {/* Main Content */}
       <main className="main-content flex-1 ml-[280px] md:ml-[280px]">
-        <div className="search-container">
+        <div className="search-container  ">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search for songs, lyrics..."
-              className="search-bar pl-10"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+           
+            <AnimatedSearchBar />
+        
           </div>
         </div>
 

@@ -6,7 +6,7 @@
   --accent: #d63736;
   --background: #0d0d0d;
   --sidebar: #1a1a1a;
-  --card: #282828;
+  --card: #161616;
   --text-primary: #ffffff;
   --text-secondary: #b3b3b3;
 }
@@ -109,9 +109,7 @@ body {
 }
 
 .search-bar {
-  background-color: var(--card);
   border: none;
-  border-radius: 8px;
   padding: 12px 16px;
   color: var(--text-primary);
   width: 100%;
