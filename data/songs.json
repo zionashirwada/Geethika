@@ -1,0 +1,18 @@
+{
+  "songs": [
+    {
+      "ID": "1",
+      "Display_Name": "Amazing Grace",
+      "Search_Name": "Traditional Hymn",
+      "Content": "Amazing grace, how sweet the sound\nThat saved a wretch like me.\nI once was lost, but now am found,\nWas blind, but now I see.",
+      "Language": "English"
+    },
+    {
+      "ID": "2",
+      "Display_Name": "How Great Thou Art",
+      "Search_Name": null,
+      "Content": "How Great Thou Art, O Lord My God\r\n\r\nO Lord my God, when I in awesome wonder,\r\nConsider all the worlds Thy Hands have made;\r\nI see the stars, I hear the rolling thunder,\r\nThy power throughout the universe displayed.\r\n\r\n<c>Chorus:<\/c><chorus>\r\nThen sings my soul, my Saviour God, to Thee,\r\nHow great Thou art, how great Thou art.\r\nThen sings my soul, my Saviour God, to Thee,\r\nHow great Thou art, how great Thou art!<\/chorus>\r\n\r\nWhen through the woods, and forest glades I wander,\r\nAnd hear the birds sing sweetly in the trees.\r\nWhen I look down, from lofty mountain grandeur\r\nAnd see the brook, and feel the gentle breeze.\r\n\r\n<cr>Chorus…<\/cr>\r\n\r\nAnd when I think, that God, His Son not sparing;\r\nSent Him to die, I scarce can take it in;\r\nThat on the Cross, my burden gladly bearing,\r\nHe bled and died to take away my sin.\r\n\r\n<cr>Chorus…<\/cr>\r\n\r\nWhen Christ shall come, with shout of acclamation,\r\nAnd take me home, what joy shall fill my heart.\r\nThen I shall bow, in humble adoration,\r\nAnd then proclaim: \"My God, how great Thou art!\"\r\n\r\n<cr>Chorus…<\/cr>\r\n\r\n\r\n\r\n<notes>Text: Carl Boberg; Trans. Stuart K. Hine, 1953\r\nMusic: Swedish Folk Melody; Arr. By Stuart K. Hine, 1953\r\nTune: O STORE GUD (HOW GREAT THOU ART), Meter: Irr. With Refrain<\/notes>\r\n\r\n",
+      "Language": "English"
+    }
+  ]
+}
