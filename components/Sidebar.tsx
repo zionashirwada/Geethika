@@ -1,14 +1,9 @@
 import Image from 'next/image';
 import {
   Home,
-  Compass,
-  TrendingUp,
-  Album,
-  User2,
-  Clock,
-  PlayCircle,
-  Heart,
-  ListMusic,
+  BookOpen,
+  Music,
+  Info,
   PlusCircle,
 } from 'lucide-react';
 
@@ -30,45 +25,27 @@ export default function Sidebar({ isOpen }: SidebarProps) {
           Home
         </a>
         <a href="#" className="sidebar-link active">
-          <Compass size={20} />
-          Discover
+          <BookOpen size={20} />
+          Lyrics
         </a>
         <a href="#" className="sidebar-link">
-          <TrendingUp size={20} />
-          Trending
+          <BookOpen size={20} />
+          Bible
         </a>
         <a href="#" className="sidebar-link">
-          <Album size={20} />
-          Albums
-        </a>
-        <a href="#" className="sidebar-link">
-          <User2 size={20} />
-          Artist
+          <Music size={20} />
+          Hymns
         </a>
       </div>
 
       <div className="section-title">Library</div>
       <a href="#" className="sidebar-link">
-        <Clock size={20} />
-        Recent added
+        <Info size={20} />
+        About
       </a>
       <a href="#" className="sidebar-link">
-        <PlayCircle size={20} />
-        Most played
-      </a>
-      <a href="#" className="sidebar-link">
-        <Heart size={20} />
-        Favorite tracks
-      </a>
-
-      <div className="section-title">Playlist</div>
-      <a href="#" className="sidebar-link">
-        <ListMusic size={20} />
-        My playlist
-      </a>
-      <a href="#" className="sidebar-link text-[#d63736]">
         <PlusCircle size={20} />
-        Create New
+        Contribute
       </a>
     </nav>
   );
