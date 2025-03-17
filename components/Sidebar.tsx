@@ -71,7 +71,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <Info size={20} />
         {isOpen && <span>About</span>}
       </a>
-      <a href="/lyrics/new" className={`sidebar-link transition-all duration-300 ${pathname === '/lyrics/new' ? 'active' : ''}`} title={!isOpen ? "Contribute" : ""}>
+      <a href="/add" className={`sidebar-link transition-all duration-300 ${pathname === '/add' ? 'active' : ''}`} title={!isOpen ? "Contribute" : ""}>
         <PlusCircle size={20} />
         {isOpen && <span>Contribute</span>}
       </a>

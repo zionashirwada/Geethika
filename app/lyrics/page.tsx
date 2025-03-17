@@ -8,6 +8,7 @@ import { getAllSongs } from '@/lib/songs';
 import Sidebar from '@/components/Sidebar';
 import AnimatedSearchBar from '@/components/SearchBar';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ScoredSong extends Song {
   score: number;
@@ -19,14 +20,15 @@ export default function LyricsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [scoredSongs, setScoredSongs] = useState<ScoredSong[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<Song[]>(getAllSongs());
-  const [selectedLanguage, setSelectedLanguage] = useState('All'); // { changed code }
-  
+  const [selectedLanguage, setSelectedLanguage] = useState('All');
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const songsPerPage = 10;
   const [totalSongs, setTotalSongs] = useState(getAllSongs().length);
   const [displayedSongs, setDisplayedSongs] = useState<Song[]>([]);
-  
+
   // Debouncing setup
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
@@ -43,8 +45,8 @@ export default function LyricsPage() {
 
   // Search filtering effect
   useEffect(() => {
+    setIsLoading(true); // Set loading to true when search starts
     const allSongs = getAllSongs();
-    // Filter songs by language selection (if not 'All')
     const filterByLanguage = (songs: Song[]) =>
       selectedLanguage === 'All' ? songs : songs.filter(song => song.Language === selectedLanguage);
 
@@ -53,12 +55,13 @@ export default function LyricsPage() {
       setScoredSongs([]);
       setFilteredSongs(songs);
       setTotalSongs(songs.length);
+      setIsLoading(false); // Set loading to false when search completes
       return;
     }
 
     const searchString = debouncedQuery.toLowerCase();
     const scored: ScoredSong[] = allSongs
-      .filter(song => selectedLanguage === 'All' || song.Language === selectedLanguage) // language filter added for search
+      .filter(song => selectedLanguage === 'All' || song.Language === selectedLanguage)
       .map(song => {
         const displayName = song.Display_Name.toLowerCase();
         const searchName = song.Search_Name?.toLowerCase() || '';
@@ -101,8 +104,9 @@ export default function LyricsPage() {
     setScoredSongs(scored);
     setFilteredSongs(scored);
     setTotalSongs(scored.length);
-    setCurrentPage(1); // Reset to first page on filter change
-  }, [debouncedQuery, selectedLanguage]); // { changed code: added selectedLanguage dependency }
+    setCurrentPage(1);
+    setIsLoading(false); // Set loading to false when search completes
+  }, [debouncedQuery, selectedLanguage]);
 
   // Pagination effect
   useEffect(() => {
@@ -113,7 +117,7 @@ export default function LyricsPage() {
 
   // Pagination controls
   const totalPages = Math.ceil(filteredSongs.length / songsPerPage);
-  
+
   const goToPage = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
@@ -128,7 +132,7 @@ export default function LyricsPage() {
       <div className="hidden md:block">
         <Sidebar isOpen={true} />
       </div>
-      
+
       {/* Mobile Sidebar and Overlay */}
       {isMenuOpen && (
         <>
@@ -147,7 +151,7 @@ export default function LyricsPage() {
         <div className="search-container mb-6">
           <div className="relative">
             <AnimatedSearchBar onSearch={handleSearch} />
-            <div className="mt-2 text-gray-400 text-sm">
+            <div className="mt-2 ml-2 text-gray-400 text-sm">
               {searchQuery.trim() 
                 ? `Found ${totalSongs} song${totalSongs !== 1 ? 's' : ''} matching "${searchQuery}"`
                 : `Total ${totalSongs} song${totalSongs !== 1 ? 's' : ''}`}
@@ -179,7 +183,16 @@ export default function LyricsPage() {
         </div>
 
         <div className="song-list">
-          {displayedSongs.length > 0 ? (
+          {isLoading ? (
+            // Show skeletons while loading
+            [...Array(10)].map((_, index) => (
+              <div key={index} className="song-item p-4 bg-[#262626] rounded-lg">
+                <Skeleton className="h-6 w-1/2 mb-2" />
+                <Skeleton className="h-4 w-1/3 mb-2" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ))
+          ) : displayedSongs.length > 0 ? (
             displayedSongs.map((song) => (
               <div 
                 key={song.ID} 
@@ -224,11 +237,10 @@ export default function LyricsPage() {
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            
+
             <div className="flex items-center space-x-1">
               {[...Array(totalPages)].map((_, i) => {
                 const pageNum = i + 1;
-                // Show current page and at most 2 pages on either side
                 if (
                   pageNum === 1 ||
                   pageNum === totalPages ||
@@ -237,7 +249,6 @@ export default function LyricsPage() {
                   return (
                     <Button
                       key={pageNum}
-                   
                       size="sm"
                       onClick={() => goToPage(pageNum)}
                       className={
@@ -253,13 +264,12 @@ export default function LyricsPage() {
                   (pageNum === currentPage - 3 && currentPage > 3) ||
                   (pageNum === currentPage + 3 && currentPage < totalPages - 2)
                 ) {
-                  // Show ellipsis for skipped pages
                   return <span key={pageNum}>...</span>;
                 }
                 return null;
               })}
             </div>
-            
+
             <Button
               size="sm"
               onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
