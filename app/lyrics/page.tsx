@@ -19,6 +19,7 @@ export default function LyricsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [scoredSongs, setScoredSongs] = useState<ScoredSong[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<Song[]>(getAllSongs());
+  const [selectedLanguage, setSelectedLanguage] = useState('All'); // { changed code }
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,81 +43,66 @@ export default function LyricsPage() {
 
   // Search filtering effect
   useEffect(() => {
+    const allSongs = getAllSongs();
+    // Filter songs by language selection (if not 'All')
+    const filterByLanguage = (songs: Song[]) =>
+      selectedLanguage === 'All' ? songs : songs.filter(song => song.Language === selectedLanguage);
+
     if (!debouncedQuery.trim()) {
+      const songs = filterByLanguage(allSongs);
       setScoredSongs([]);
-      setFilteredSongs(getAllSongs());
-      setTotalSongs(getAllSongs().length);
+      setFilteredSongs(songs);
+      setTotalSongs(songs.length);
       return;
     }
 
     const searchString = debouncedQuery.toLowerCase();
-    
-    // Score and filter songs based on relevance
-    const scored: ScoredSong[] = getAllSongs().map(song => {
-      const displayName = song.Display_Name.toLowerCase();
-      const searchName = song.Search_Name?.toLowerCase() || '';
-      const content = song.Content.toLowerCase();
-      const englishText = (song as any).English_Text?.toLowerCase() || '';
-      
-      let score = 0;
-      
-      // Exact match in Display_Name gets highest score
-      if (displayName === searchString) {
-        score += 100;
-      } 
-      // Display_Name starts with search string
-      else if (displayName.startsWith(searchString)) {
-        score += 50;
-      }
-      // Display_Name contains search string
-      else if (displayName.includes(searchString)) {
-        score += 25;
-      }
-      
-      // Search_Name exact match or contains
-      if (searchName === searchString) {
-        score += 75;
-      } else if (searchName.includes(searchString)) {
-        score += 20;
-      }
-      
-      // Content has exact phrase match
-      if (content.includes(searchString)) {
-        score += 15;
-      }
-      
-      // English_Text has exact phrase match
-      if (englishText.includes(searchString)) {
-        score += 15;
-      }
-
-      // Check for partial word matches if no exact matches
-      if (score === 0) {
-        const words = searchString.split(/\s+/);
-        for (const word of words) {
-          if (word.length < 2) continue; // Skip very short words
-          
-          if (displayName.includes(word)) score += 10;
-          if (searchName.includes(word)) score += 8;
-          if (content.includes(word)) score += 5;
-          if (englishText.includes(word)) score += 5;
+    const scored: ScoredSong[] = allSongs
+      .filter(song => selectedLanguage === 'All' || song.Language === selectedLanguage) // language filter added for search
+      .map(song => {
+        const displayName = song.Display_Name.toLowerCase();
+        const searchName = song.Search_Name?.toLowerCase() || '';
+        const content = song.Content.toLowerCase();
+        const englishText = (song as any).English_Text?.toLowerCase() || '';
+        let score = 0;
+        if (displayName === searchString) {
+          score += 100;
+        } else if (displayName.startsWith(searchString)) {
+          score += 50;
+        } else if (displayName.includes(searchString)) {
+          score += 25;
         }
-      }
-      
-      return {
-        ...song,
-        score
-      };
-    }).filter(song => song.score > 0);
-    
-    // Sort by score (highest first)
+        if (searchName === searchString) {
+          score += 75;
+        } else if (searchName.includes(searchString)) {
+          score += 20;
+        }
+        if (content.includes(searchString)) {
+          score += 15;
+        }
+        if (englishText.includes(searchString)) {
+          score += 15;
+        }
+        if (score === 0) {
+          const words = searchString.split(/\s+/);
+          for (const word of words) {
+            if (word.length < 2) continue;
+            if (displayName.includes(word)) score += 10;
+            if (searchName.includes(word)) score += 8;
+            if (content.includes(word)) score += 5;
+            if (englishText.includes(word)) score += 5;
+          }
+        }
+        return { ...song, score };
+      })
+      .filter(song => song.score > 0);
+
     scored.sort((a, b) => b.score - a.score);
-    
     setScoredSongs(scored);
     setFilteredSongs(scored);
     setTotalSongs(scored.length);
-    setCurrentPage(1); // Reset to first page on new search
-  }, [debouncedQuery]);
+    setCurrentPage(1); // Reset to first page on filter change
+  }, [debouncedQuery, selectedLanguage]); // { changed code: added selectedLanguage dependency }
 
   // Pagination effect
   useEffect(() => {
@@ -167,9 +153,32 @@ export default function LyricsPage() {
                 : `Total ${totalSongs} song${totalSongs !== 1 ? 's' : ''}`}
             </div>
           </div>
+          {/* New Language Filter Pills */}
+          <div className="language-filter flex space-x-2 mt-4">
+            <Button 
+              onClick={() => setSelectedLanguage('All')} 
+              className={`px-3 py-1 rounded-full ${selectedLanguage === 'All' ? 'bg-[#d63736] text-white' : 'bg-[#262626] text-gray-300'}`}>
+              All
+            </Button>
+            <Button 
+              onClick={() => setSelectedLanguage('English')} 
+              className={`px-3 py-1 rounded-full ${selectedLanguage === 'English' ? 'bg-[#d63736] text-white' : 'bg-[#262626] text-gray-300'}`}>
+              English
+            </Button>
+            <Button 
+              onClick={() => setSelectedLanguage('Sinhala')} 
+              className={`px-3 py-1 rounded-full ${selectedLanguage === 'Sinhala' ? 'bg-[#d63736] text-white' : 'bg-[#262626] text-gray-300'}`}>
+              Sinhala
+            </Button>
+            <Button 
+              onClick={() => setSelectedLanguage('Tamil')} 
+              className={`px-3 py-1 rounded-full ${selectedLanguage === 'Tamil' ? 'bg-[#d63736] text-white' : 'bg-[#262626] text-gray-300'}`}>
+              Tamil
+            </Button>
+          </div>
         </div>
 
-        <div className="song-list space-y-6">
+        <div className="song-list">
           {displayedSongs.length > 0 ? (
             displayedSongs.map((song) => (
               <div 
