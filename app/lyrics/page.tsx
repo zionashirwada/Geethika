@@ -203,6 +203,12 @@ export default function LyricsPage() {
           ) : (
             <div className="text-center py-10">
               <p className="text-gray-400">No songs found matching &quot;{searchQuery}&quot;</p>
+              <Button
+                className="mt-4 bg-[#d63736] hover:bg-[#e64736] text-white rounded-xl"
+                onClick={() => router.push('/lyrics/new')}
+              >
+                Add New Song
+              </Button>
             </div>
           )}
         </div>

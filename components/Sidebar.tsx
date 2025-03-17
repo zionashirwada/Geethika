@@ -5,7 +5,9 @@ import {
   Music,
   Info,
   PlusCircle,
-  X, // added for mobile close button
+  X,
+  Globe,
+  BookText, // added for mobile close button
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -37,30 +39,34 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       <div>
         <div className={`text-sm font-medium mb-2 px-4 ${!isOpen && 'hidden'} transition-all duration-300`}>Menu</div>
-        <a href="#" className="sidebar-link transition-all duration-300" title={!isOpen ? "Home" : ""}>
+        <a href="/" className="sidebar-link transition-all duration-300" title={!isOpen ? "Home" : ""}>
           <Home size={20} />
           {isOpen && <span>Home</span>}
         </a>
-        <a href="#" className="sidebar-link active transition-all duration-300" title={!isOpen ? "Lyrics" : ""}>
-          <BookOpen size={20} />
+        <a href="/lyrics" className="sidebar-link active transition-all duration-300" title={!isOpen ? "Lyrics" : ""}>
+          <BookText size={20} />
           {isOpen && <span>Lyrics</span>}
         </a>
-        <a href="#" className="sidebar-link transition-all duration-300" title={!isOpen ? "Bible" : ""}>
+        <a href="/bible" className="sidebar-link transition-all duration-300" title={!isOpen ? "Bible" : ""}>
           <BookOpen size={20} />
           {isOpen && <span>Bible</span>}
         </a>
-        <a href="#" className="sidebar-link transition-all duration-300" title={!isOpen ? "Hymns" : ""}>
+        <a href="/hymns" className="sidebar-link transition-all duration-300" title={!isOpen ? "Hymns" : ""}>
           <Music size={20} />
           {isOpen && <span>Hymns</span>}
+        </a>
+        <a href="/translate" className="sidebar-link transition-all duration-300" title={!isOpen ? "Translate" : ""}>
+          <Globe size={20} />
+          {isOpen && <span>Translate</span>}  
         </a>
       </div>
 
       <div className={`section-title ${!isOpen && 'hidden'} transition-all duration-300`}>Library</div>
-      <a href="#" className="sidebar-link transition-all duration-300" title={!isOpen ? "About" : ""}>
+      <a href="/about" className="sidebar-link transition-all duration-300" title={!isOpen ? "About" : ""}>
         <Info size={20} />
         {isOpen && <span>About</span>}
       </a>
-      <a href="#" className="sidebar-link transition-all duration-300" title={!isOpen ? "Contribute" : ""}>
+      <a href="/lyrics/new" className="sidebar-link transition-all duration-300" title={!isOpen ? "Contribute" : ""}>
         <PlusCircle size={20} />
         {isOpen && <span>Contribute</span>}
       </a>
