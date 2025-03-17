@@ -36,6 +36,21 @@ body {
   z-index: 50;
 }
 
+.sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar.collapsed .sidebar-link {
+  padding: 12px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.sidebar.collapsed .sidebar-link:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);

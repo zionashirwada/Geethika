@@ -20,6 +20,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getSongById } from '@/lib/songs';
 import type { Song } from '@/lib/types';
+import Sidebar from '@/components/Sidebar';
 
 export function LyricsView({ id }: { id: string }) {
   const router = useRouter();
@@ -48,48 +49,8 @@ export function LyricsView({ id }: { id: string }) {
 
   return (
     <div className="flex min-h-screen bg-[#121212]">
-      {/* Minimized Sidebar */}
-      <nav className="fixed left-0 top-0 h-full w-16 bg-[#1a1a1a] flex flex-col items-center py-6 space-y-8">
-        <Headphones className="w-6 h-6 text-[#d63736]" />
-        <div className="space-y-6">
-          <a href="#" className="block text-gray-400 hover:text-white">
-            <Home size={20} />
-          </a>
-          <a href="#" className="block text-[#d63736]">
-            <Compass size={20} />
-          </a>
-          <a href="#" className="block text-gray-400 hover:text-white">
-            <TrendingUp size={20} />
-          </a>
-          <a href="#" className="block text-gray-400 hover:text-white">
-            <Album size={20} />
-          </a>
-          <a href="#" className="block text-gray-400 hover:text-white">
-            <User2 size={20} />
-          </a>
-        </div>
-        
-        <div className="space-y-6 mt-8">
-          <a href="#" className="block text-gray-400 hover:text-white">
-            <Clock size={20} />
-          </a>
-          <a href="#" className="block text-gray-400 hover:text-white">
-            <PlayCircle size={20} />
-          </a>
-          <a href="#" className="block text-gray-400 hover:text-white">
-            <Heart size={20} />
-          </a>
-        </div>
-        
-        <div className="space-y-6 mt-8">
-          <a href="#" className="block text-gray-400 hover:text-white">
-            <ListMusic size={20} />
-          </a>
-          <a href="#" className="block text-[#d63736]">
-            <PlusCircle size={20} />
-          </a>
-        </div>
-      </nav>
+    
+    <Sidebar isOpen={false} />
 
       {/* Main Content */}
       <main className="flex-1 ml-16 p-8">

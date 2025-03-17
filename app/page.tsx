@@ -31,7 +31,7 @@ export default function HomePage() {
 
   return (
     <div className="flex min-h-screen p-4 lg:px-14">
-      <Sidebar isOpen={isMenuOpen} />
+      <Sidebar isOpen={true} />
 
       {/* Main Content */}
       <main className="main-content flex-1 ml-[280px]">
