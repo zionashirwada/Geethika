@@ -34,20 +34,29 @@ export function LyricsView({ id }: { id: string }) {
     setSong(songData);
   }, [id]);
 
+  const extractNotes = (content: string) => {
+    const notesMatch = content.match(/<notes>(.*?)<\/notes>/s);
+    return notesMatch ? notesMatch[1] : null;
+  };
+
   const formatLyrics = (content: string) => {
-    return content.split(/\r\n\r\n/).map((paragraph, index) => {
-      // Replace <c> tags with bold text
+    // Remove notes section from display content
+    const contentWithoutNotes = content.replace(/<notes>.*?<\/notes>/s, '');
+    
+    return contentWithoutNotes.split(/\r\n\r\n/).map((paragraph, index) => {
       const formattedParagraph = paragraph.replace(
         /<c>(.*?)<\/c>/g,
         '<strong>$1</strong>'
       );
-      return `${formattedParagraph}${index < content.split(/\r\n\r\n/).length - 1 ? '\n\n' : ''}`;
+      return `${formattedParagraph}${index < contentWithoutNotes.split(/\r\n\r\n/).length - 1 ? '\n\n' : ''}`;
     }).join('');
   };
 
   if (!song) {
     return <div>Loading...</div>;
   }
+
+  const notes = extractNotes(song.Content);
 
   return (
     <div className="flex min-h-screen relative">
@@ -98,24 +107,32 @@ export function LyricsView({ id }: { id: string }) {
           <div className="flex items-center gap-4 text-gray-400 mb-8">
             <span className="language-button">{song.Language}</span>
           </div>
+          {notes && (
+            <div className="text-gray-400 mb-6 text-sm bg-[#d6363623] p-4 rounded-lg">
+              {notes.split('\r\n').map((line, index) => (
+                <div key={index}>{line}</div>
+              ))}
+            </div>
+          )}
+          
 
-          <Tabs defaultValue="unicode" className="w-full">
-            <TabsList className="bg-[#161616] mb-4">
+          <Tabs defaultValue="unicode" className="w-full rounded-xl">
+            <TabsList className="bg-[#161616] mb-4 rounded-xl">
               <TabsTrigger 
                 value="unicode"
-                className="data-[state=active]:bg-[#d63736]"
+                className="data-[state=active]:bg-[#d63736] rounded-xl"
               >
                 Unicode
               </TabsTrigger>
               <TabsTrigger 
                 value="fm-atava"
-                className="data-[state=active]:bg-[#d63736]"
+                className="data-[state=active]:bg-[#d63736] rounded-xl"
               >
-                FM-ATAVA
+                Sinhala Font (FM)
               </TabsTrigger>
               <TabsTrigger 
                 value="tamil"
-                className="data-[state=active]:bg-[#d63736]"
+                className="data-[state=active]:bg-[#d63736] rounded-xl"
               >
                 Tamil Font
               </TabsTrigger>
