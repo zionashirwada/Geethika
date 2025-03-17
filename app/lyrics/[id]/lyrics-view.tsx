@@ -4,7 +4,7 @@ import Sidebar from '@/components/Sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getSongById } from '@/lib/songs';
 import type { Song } from '@/lib/types';
-import { unicodeToFMFont } from '@/lib/utils';
+import { unicodeToFMFont, unicodeToBamini } from '@/lib/utils';
 import {
   ArrowLeft,
   Copy,
@@ -94,6 +94,41 @@ export function LyricsView({ id }: { id: string }) {
       return `<div class="verse-block cursor-pointer hover:bg-[#d63736]/20 rounded px-2 py-1 mb-4 transition-colors fm-font" 
                   data-verse="${plainTextVerse.replace(/"/g, '&quot;')}" 
                   onclick="window.copyVerse(this.getAttribute('data-verse'))">${fmVerseHtml}</div>`;
+    }).join('');
+  };
+
+  // Function for Bamini font conversion
+  const formatLyricsWithBaminiFont = (content: string) => {
+    // Remove notes section from display content
+    const contentWithoutNotes = content.replace(/<notes>.*?<\/notes>/s, '');
+    
+    // Split by double line breaks to get paragraphs
+    const paragraphs = contentWithoutNotes.split(/\r\n\r\n/);
+    
+    // Process each paragraph and wrap verses in interactive spans
+    return paragraphs.map((paragraph, index) => {
+      // Store the original plain text (without tags) for copying
+      // Remove any formatting tags for clipboard copy
+      const plainTextVerse = paragraph.replace(/<c>(.*?)<\/c>/g, '$1')
+                                     .replace(/<cr>(.*?)<\/cr>/g, '$1')
+                                     .replace(/<chorus>(.*?)<\/chorus>/g, '$1');
+      
+      // Format the chorus tags for display only
+      const formattedParagraph = paragraph.replace(
+        /<c>(.*?)<\/c>/g,
+        '<strong>$1</strong>'
+      );
+      
+      // Replace line breaks with <br> tags for HTML rendering
+      const verseHtml = formattedParagraph.replace(/\r\n/g, '<br>');
+      
+      // Convert text to Bamini font
+      const baminiVerseHtml = unicodeToBamini(verseHtml);
+      
+      // Wrap in same clickable div structure as normal Unicode text
+      return `<div class="verse-block cursor-pointer hover:bg-[#d63736]/20 rounded px-2 py-1 mb-4 transition-colors bamini-font" 
+                  data-verse="${plainTextVerse.replace(/"/g, '&quot;')}" 
+                  onclick="window.copyVerse(this.getAttribute('data-verse'))">${baminiVerseHtml}</div>`;
     }).join('');
   };
 
@@ -271,16 +306,19 @@ export function LyricsView({ id }: { id: string }) {
                     .replace(/<cr>(.*?)<\/cr>/g, '$1')
                     .replace(/<chorus>(.*?)<\/chorus>/g, '$1');
                   
-                  navigator.clipboard.writeText(plainContent);
-                  toast.success('Content copied to clipboard!');
+                  // Convert to Bamini font for clipboard
+                  const baminiContent = unicodeToBamini(plainContent);
+                  navigator.clipboard.writeText(baminiContent);
+                  toast.success('Tamil Font content copied to clipboard!');
                 }}
               >
                 <Copy size={18} />
                 Copy All
               </button>
               <div
-                className="w-full rounded-xl bg-[#161616] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap"
-                dangerouslySetInnerHTML={{ __html: formatLyrics(song.Content) }}
+                className="w-full rounded-xl bg-[#161616] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap tamil-font"
+                dangerouslySetInnerHTML={{ __html: formatLyricsWithBaminiFont(song.Content) }}
+                style={{ fontFamily: "Bamini, TSC_Avarangal, serif" }}
               />
             </TabsContent>
           </Tabs>
