@@ -214,7 +214,7 @@ export function LyricsView({ id }: { id: string }) {
             )}
           </h1>
           <div className="flex items-center gap-4 text-gray-400 mb-8">
-            <span className="language-button">{song.Language}</span>
+            <span className="language-button bg-[#d63636]/60">{song.Language}</span>
           </div>
           {notes && (
             <div className="text-gray-400 mb-6 text-sm bg-[#d6363623] p-4 rounded-lg">
