@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface AnimatedSearchBarProps {
@@ -42,6 +42,13 @@ const AnimatedSearchBar = ({ onSearch }: AnimatedSearchBarProps) => {
     }
   };
 
+  const clearSearch = () => {
+    setSearchQuery('');
+    if (onSearch) {
+      onSearch('');
+    }
+  };
+
   return (
     <div className="relative w-full max-w-md">
       <div className="relative flex items-center">
@@ -54,9 +61,13 @@ const AnimatedSearchBar = ({ onSearch }: AnimatedSearchBarProps) => {
         />
         <Button 
           className="absolute right-3 p-2 bg-red-500 rounded-full hover:bg-red-600 transition-colors duration-200 h-auto"
-          onClick={() => onSearch && onSearch(searchQuery)}
+          onClick={searchQuery ? clearSearch : () => onSearch && onSearch(searchQuery)}
         >
-          <Search className="h-4 w-4 text-white" />
+          {searchQuery ? (
+            <X className="h-4 w-4 text-white" />
+          ) : (
+            <Search className="h-4 w-4 text-white" />
+          )}
         </Button>
       </div>
       <div 

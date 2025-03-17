@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, Search } from 'lucide-react';
+import { Menu, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Song } from '@/lib/types';
 import { getAllSongs } from '@/lib/songs';
 import Sidebar from '@/components/Sidebar';
 import AnimatedSearchBar from '@/components/SearchBar';
+import { Button } from '@/components/ui/button';
 
 interface ScoredSong extends Song {
   score: number;
@@ -16,18 +17,42 @@ export default function LyricsPage() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [scoredSongs, setScoredSongs] = useState<ScoredSong[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<Song[]>(getAllSongs());
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const songsPerPage = 10;
+  const [totalSongs, setTotalSongs] = useState(getAllSongs().length);
+  const [displayedSongs, setDisplayedSongs] = useState<Song[]>([]);
+  
+  // Debouncing setup
+  const [debouncedQuery, setDebouncedQuery] = useState('');
 
+  // Debounce search query
   useEffect(() => {
-    if (!searchQuery.trim()) {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
+
+  // Search filtering effect
+  useEffect(() => {
+    if (!debouncedQuery.trim()) {
+      setScoredSongs([]);
       setFilteredSongs(getAllSongs());
+      setTotalSongs(getAllSongs().length);
       return;
     }
 
-    const searchString = searchQuery.toLowerCase();
+    const searchString = debouncedQuery.toLowerCase();
     
     // Score and filter songs based on relevance
-    const scoredSongs: ScoredSong[] = getAllSongs().map(song => {
+    const scored: ScoredSong[] = getAllSongs().map(song => {
       const displayName = song.Display_Name.toLowerCase();
       const searchName = song.Search_Name?.toLowerCase() || '';
       const content = song.Content.toLowerCase();
@@ -85,10 +110,27 @@ export default function LyricsPage() {
     }).filter(song => song.score > 0);
     
     // Sort by score (highest first)
-    scoredSongs.sort((a, b) => b.score - a.score);
+    scored.sort((a, b) => b.score - a.score);
     
-    setFilteredSongs(scoredSongs);
-  }, [searchQuery]);
+    setScoredSongs(scored);
+    setFilteredSongs(scored);
+    setTotalSongs(scored.length);
+    setCurrentPage(1); // Reset to first page on new search
+  }, [debouncedQuery]);
+
+  // Pagination effect
+  useEffect(() => {
+    const indexOfLastSong = currentPage * songsPerPage;
+    const indexOfFirstSong = indexOfLastSong - songsPerPage;
+    setDisplayedSongs(filteredSongs.slice(indexOfFirstSong, indexOfLastSong));
+  }, [currentPage, filteredSongs]);
+
+  // Pagination controls
+  const totalPages = Math.ceil(filteredSongs.length / songsPerPage);
+  
+  const goToPage = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -115,16 +157,21 @@ export default function LyricsPage() {
       )}
 
       {/* Main Content */}
-      <main className="main-content flex-1 ml-[280px] md:ml-[280px]">
+      <main className="main-content flex-1 ml-0 md:ml-[280px]">
         <div className="search-container mb-6">
           <div className="relative">
             <AnimatedSearchBar onSearch={handleSearch} />
+            <div className="mt-2 text-gray-400 text-sm">
+              {searchQuery.trim() 
+                ? `Found ${totalSongs} song${totalSongs !== 1 ? 's' : ''} matching "${searchQuery}"`
+                : `Total ${totalSongs} song${totalSongs !== 1 ? 's' : ''}`}
+            </div>
           </div>
         </div>
 
         <div className="song-list space-y-6">
-          {filteredSongs.length > 0 ? (
-            filteredSongs.map((song) => (
+          {displayedSongs.length > 0 ? (
+            displayedSongs.map((song) => (
               <div 
                 key={song.ID} 
                 className="song-item cursor-pointer p-4 bg-[#262626] rounded-lg hover:bg-[#323232] transition-colors duration-200"
@@ -150,6 +197,64 @@ export default function LyricsPage() {
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="pagination flex justify-center items-center mt-8 space-x-2">
+            <Button
+              size="sm"
+              onClick={() => goToPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="p-2 bg-[#262626] hover:bg-[#323232] rounded-full"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <div className="flex items-center space-x-1">
+              {[...Array(totalPages)].map((_, i) => {
+                const pageNum = i + 1;
+                // Show current page and at most 2 pages on either side
+                if (
+                  pageNum === 1 ||
+                  pageNum === totalPages ||
+                  Math.abs(pageNum - currentPage) <= 2
+                ) {
+                  return (
+                    <Button
+                      key={pageNum}
+                   
+                      size="sm"
+                      onClick={() => goToPage(pageNum)}
+                      className={
+                        currentPage === pageNum
+                          ? "bg-[#d63736] hover:bg-[#e64736] rounded-full"
+                          : "bg-[#262626] hover:bg-[#323232] rounded-full"
+                      }
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                } else if (
+                  (pageNum === currentPage - 3 && currentPage > 3) ||
+                  (pageNum === currentPage + 3 && currentPage < totalPages - 2)
+                ) {
+                  // Show ellipsis for skipped pages
+                  return <span key={pageNum}>...</span>;
+                }
+                return null;
+              })}
+            </div>
+            
+            <Button
+              size="sm"
+              onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 bg-[#262626] hover:bg-[#323232] rounded-full"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </main>
 
       {/* Hamburger Button for Mobile */}
