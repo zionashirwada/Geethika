@@ -77,16 +77,17 @@ export function LyricsView({ id }: { id: string }) {
         <Menu size={24} />
       </button>
 
+      {/* Back Button */}
+      <button 
+        onClick={() => router.back()}
+        className="hidden md:flex fixed top-10 left-4 md:left-[350px] z-40 items-center gap-2 bg-[#161616]/90 backdrop-blur-sm hover:bg-[#27272A] text-gray-400 hover:text-white px-4 py-2 rounded-full transition-colors"
+      >
+        <ArrowLeft size={20} className='' />
+        Back
+      </button>
+
       {/* Main Content */}
       <main className="flex-1 ml-16 p-8 md:ml-[280px]">
-        <button 
-          onClick={() => router.back()}
-          className="text-gray-400 hover:text-white flex items-center gap-2 mb-6"
-        >
-          <ArrowLeft size={20} />
-          Back
-        </button>
-
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-white mb-4">
             {song.Display_Name}
