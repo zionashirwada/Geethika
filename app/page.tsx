@@ -2,23 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Home,
-  Compass,
-  TrendingUp,
-  Album,
-  User2,
-  Clock,
-  PlayCircle,
-  Heart,
-  ListMusic,
-  PlusCircle,
-  Headphones,
-  Menu,
-  Search,
-} from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 import type { Song } from '@/lib/types';
 import { getAllSongs } from '@/lib/songs';
+import Sidebar from '@/components/Sidebar';
 
 export default function HomePage() {
   const router = useRouter();
@@ -43,64 +30,11 @@ export default function HomePage() {
   }, [searchQuery]);
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <nav className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
-        <div className="flex items-center gap-2 mb-8">
-          <Headphones className="w-8 h-8 text-[#d63736]" />
-        </div>
-
-        <div>
-          <div className="text-sm font-medium mb-2">Menu</div>
-          <a href="#" className="sidebar-link">
-            <Home size={20} />
-            Home
-          </a>
-          <a href="#" className="sidebar-link active">
-            <Compass size={20} />
-            Discover
-          </a>
-          <a href="#" className="sidebar-link">
-            <TrendingUp size={20} />
-            Trending
-          </a>
-          <a href="#" className="sidebar-link">
-            <Album size={20} />
-            Albums
-          </a>
-          <a href="#" className="sidebar-link">
-            <User2 size={20} />
-            Artist
-          </a>
-        </div>
-
-        <div className="section-title">Library</div>
-        <a href="#" className="sidebar-link">
-          <Clock size={20} />
-          Recent added
-        </a>
-        <a href="#" className="sidebar-link">
-          <PlayCircle size={20} />
-          Most played
-        </a>
-        <a href="#" className="sidebar-link">
-          <Heart size={20} />
-          Favorite tracks
-        </a>
-
-        <div className="section-title">Playlist</div>
-        <a href="#" className="sidebar-link">
-          <ListMusic size={20} />
-          My playlist
-        </a>
-        <a href="#" className="sidebar-link text-[#d63736]">
-          <PlusCircle size={20} />
-          Create New
-        </a>
-      </nav>
+    <div className="flex min-h-screen p-4 lg:px-14">
+      <Sidebar isOpen={isMenuOpen} />
 
       {/* Main Content */}
-      <main className="main-content flex-1">
+      <main className="main-content flex-1 ml-[280px]">
         <div className="search-container">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
