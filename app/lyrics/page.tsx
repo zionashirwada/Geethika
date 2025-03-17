@@ -78,9 +78,11 @@ export default function LyricsPage() {
                     <span className="text-gray-400 ml-2">| {song.Search_Name}</span>
                   )}
                 </h2>
-                <button className="language-button">{song.Language}</button>
+                <button className="language-button bg-[#d63736]/70">{song.Language}</button>
               </div>
-              <p className="mt-2 text-gray-400 line-clamp-2">{song.Content}</p>
+              <p className="mt-2 text-gray-400 line-clamp-2">
+                {song.Content.slice(0, 100)}...
+              </p>
             </div>
           ))}
         </div>
