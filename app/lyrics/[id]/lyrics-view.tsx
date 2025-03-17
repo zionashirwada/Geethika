@@ -1,27 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import {
-  Home,
-  Compass,
-  TrendingUp,
-  Album,
-  User2,
-  Clock,
-  PlayCircle,
-  Heart,
-  ListMusic,
-  PlusCircle,
-  Headphones,
-  ArrowLeft,
-  Copy,
-  Menu, // imported for hamburger button
-} from 'lucide-react';
+import Sidebar from '@/components/Sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getSongById } from '@/lib/songs';
 import type { Song } from '@/lib/types';
-import Sidebar from '@/components/Sidebar';
+import {
+  ArrowLeft,
+  Copy,
+  Menu
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 export function LyricsView({ id }: { id: string }) {
   const router = useRouter();
@@ -42,7 +32,7 @@ export function LyricsView({ id }: { id: string }) {
   const formatLyrics = (content: string) => {
     // Remove notes section from display content
     const contentWithoutNotes = content.replace(/<notes>.*?<\/notes>/s, '');
-    
+
     return contentWithoutNotes.split(/\r\n\r\n/).map((paragraph, index) => {
       const formattedParagraph = paragraph.replace(
         /<c>(.*?)<\/c>/g,
@@ -68,7 +58,7 @@ export function LyricsView({ id }: { id: string }) {
       {/* Mobile Sidebar and Overlay */}
       {isMenuOpen && (
         <>
-          <div 
+          <div
             className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
             onClick={() => setIsMenuOpen(false)}
           />
@@ -87,7 +77,7 @@ export function LyricsView({ id }: { id: string }) {
       </button>
 
       {/* Back Button */}
-      <button 
+      <button
         onClick={() => router.back()}
         className="hidden md:flex fixed top-10 left-4 md:left-[350px] z-40 items-center gap-2 bg-[#161616]/90 backdrop-blur-sm hover:bg-[#27272A] text-gray-400 hover:text-white px-4 py-2 rounded-full transition-colors"
       >
@@ -114,23 +104,22 @@ export function LyricsView({ id }: { id: string }) {
               ))}
             </div>
           )}
-          
 
           <Tabs defaultValue="unicode" className="w-full rounded-xl">
             <TabsList className="bg-[#161616] mb-4 rounded-xl">
-              <TabsTrigger 
+              <TabsTrigger
                 value="unicode"
                 className="data-[state=active]:bg-[#d63736] rounded-xl"
               >
                 Unicode
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="fm-atava"
                 className="data-[state=active]:bg-[#d63736] rounded-xl"
               >
                 Sinhala Font (FM)
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="tamil"
                 className="data-[state=active]:bg-[#d63736] rounded-xl"
               >
@@ -139,9 +128,12 @@ export function LyricsView({ id }: { id: string }) {
             </TabsList>
 
             <TabsContent value="unicode" className="mt-4 relative">
-              <button 
+              <button
                 className="absolute right-4 top-4 z-10 flex items-center gap-2 text-gray-400 hover:text-white bg-[#27272A] px-3 py-2 rounded"
-                onClick={() => navigator.clipboard.writeText(song.Content)}
+                onClick={() => {
+                  navigator.clipboard.writeText(song.Content);
+                  toast.success('Content copied to clipboard!');
+                }}
               >
                 <Copy size={18} />
                 Copy All
@@ -152,9 +144,12 @@ export function LyricsView({ id }: { id: string }) {
               />
             </TabsContent>
             <TabsContent value="fm-atava" className="mt-4 relative">
-              <button 
+              <button
                 className="absolute right-4 top-4 z-10 flex items-center gap-2 text-gray-400 hover:text-white bg-[#27272A] px-3 py-2 rounded"
-                onClick={() => navigator.clipboard.writeText(song.Content)}
+                onClick={() => {
+                  navigator.clipboard.writeText(song.Content);
+                  toast.success('Content copied to clipboard!');
+                }}
               >
                 <Copy size={18} />
                 Copy All
@@ -165,9 +160,12 @@ export function LyricsView({ id }: { id: string }) {
               />
             </TabsContent>
             <TabsContent value="tamil" className="mt-4 relative">
-              <button 
+              <button
                 className="absolute right-4 top-4 z-10 flex items-center gap-2 text-gray-400 hover:text-white bg-[#27272A] px-3 py-2 rounded"
-                onClick={() => navigator.clipboard.writeText(song.Content)}
+                onClick={() => {
+                  navigator.clipboard.writeText(song.Content);
+                  toast.success('Content copied to clipboard!');
+                }}
               >
                 <Copy size={18} />
                 Copy All
