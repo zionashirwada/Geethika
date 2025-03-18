@@ -46,7 +46,7 @@ export default function TranslatePage() {
       icon: <Type className="h-10 w-10 text-[#d63736]" />,
     },
     {
-      id: "kaputa2004-to-unicode",
+      id: "kaputa-to-unicode",
       title: "Kaputa2004 to Unicode",
       description: "Convert Sinhala text in Kaputa2004 font to Unicode standard.",
       from: "Kaputa2004",

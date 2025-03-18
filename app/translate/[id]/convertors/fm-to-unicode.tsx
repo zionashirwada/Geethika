@@ -18,39 +18,7 @@ const mockConvertFMToUnicode = (text: string) => {
 export default function FmToUnicodePage() {
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
-      {/* Header */}
-      <header className="container mx-auto py-4 px-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/placeholder.svg?height=40&width=40"
-            alt="Geetika Logo"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-          <span className="text-2xl font-bold text-white">Geetika</span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-6">
-          <Link href="/lyrics" className="hover:text-[#d63736] transition-colors">
-            Lyrics
-          </Link>
-          <Link href="/bible" className="hover:text-[#d63736] transition-colors">
-            Bible
-          </Link>
-          <Link href="/hymns" className="hover:text-[#d63736] transition-colors">
-            Hymns
-          </Link>
-          <Link href="/translate" className="hover:text-[#d63736] transition-colors text-[#d63736]">
-            Translate
-          </Link>
-          <Link href="/more-tools" className="hover:text-[#d63736] transition-colors">
-            More Tools
-          </Link>
-        </nav>
-        <Link href="/translate">
-          <Button className="bg-[#d63736] hover:bg-[#c52c2c] text-white">Back to Tools</Button>
-        </Link>
-      </header>
+     
 
       {/* Main Content */}
       <main className="container mx-auto py-12 px-4">
@@ -93,25 +61,7 @@ export default function FmToUnicodePage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-[#151515] py-8">
-        <div className="container mx-auto px-4">
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400">© {new Date().getFullYear()} Geetika. All rights reserved.</p>
-            <div className="flex gap-4 mt-4 md:mt-0">
-              <Link href="/privacy" className="text-gray-400 hover:text-[#d63736]">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="text-gray-400 hover:text-[#d63736]">
-                Terms of Service
-              </Link>
-              <Link href="/about" className="text-gray-400 hover:text-[#d63736]">
-                About
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+  
     </div>
   )
 }
