@@ -8,7 +8,7 @@ import { Metadata } from 'next';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Geethika.db - Music Library',
+  title: 'Geethika - Worship Resources for Your Church',
   description: 'Your personal music database',
 };
 

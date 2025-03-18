@@ -172,11 +172,11 @@ export default function BiblePageMenu() {
           <div className="bg-[#1a1a1a] p-6 rounded-xl border border-gray-800 mb-8">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-grow">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 rounded-xl" />
                 <Input
                   type="text"
                   placeholder="Search Bible versions..."
-                  className="pl-10 bg-[#252525] border-gray-700 text-white"
+                  className="pl-10 bg-[#252525] border-gray-700 text-white rounded-xl"
                   onChange={(e) => {
                     const searchTerm = e.target.value.toLowerCase()
                     setFilteredVersions(
@@ -190,7 +190,7 @@ export default function BiblePageMenu() {
                 />
               </div>
               <div className="flex flex-wrap gap-2">
-                <div className="w-40">
+                <div className="w-40 ">
                   <Select
                     defaultValue="all"
                     onValueChange={(value) => {
@@ -201,14 +201,22 @@ export default function BiblePageMenu() {
                       }
                     }}
                   >
-                    <SelectTrigger className="bg-[#252525] border-gray-700">
+                    <SelectTrigger className="bg-[#252525] border-gray-700 rounded-xl">
                       <SelectValue placeholder="Language" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Languages</SelectItem>
-                      <SelectItem value="english">English</SelectItem>
-                      <SelectItem value="tamil">Tamil</SelectItem>
-                      <SelectItem value="sinhala">Sinhala</SelectItem>
+                    <SelectContent className="bg-[#1a1a1a] border-gray-700 rounded-xl">
+                        <SelectItem className="hover:bg-[#333] rounded" value="all">
+                            All Languages
+                        </SelectItem>
+                        <SelectItem className="hover:bg-[#333] rounded" value="english">
+                            English
+                        </SelectItem>
+                        <SelectItem className="hover:bg-[#333] rounded" value="tamil">
+                            Tamil
+                        </SelectItem>
+                        <SelectItem className="hover:bg-[#333] rounded" value="sinhala">
+                            Sinhala
+                        </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -227,10 +235,10 @@ export default function BiblePageMenu() {
                       }
                     }}
                   >
-                    <SelectTrigger className="bg-[#252525] border-gray-700">
+                    <SelectTrigger className="bg-[#252525] border-gray-700 rounded-xl">
                       <SelectValue placeholder="Filter" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-[#1a1a1a] border-gray-700 rounded-xl">
                       <SelectItem value="all">All Versions</SelectItem>
                       <SelectItem value="popular">Popular</SelectItem>
                       <SelectItem value="recent">Most Recent</SelectItem>
@@ -238,7 +246,7 @@ export default function BiblePageMenu() {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button className="bg-[#d63736] hover:bg-[#c52c2c]" onClick={() => setFilteredVersions(bibleVersions)}>
+                <Button className="bg-[#d63736] hover:bg-[#c52c2c] rounded-xl" onClick={() => setFilteredVersions(bibleVersions)}>
                   <Filter className="h-4 w-4 mr-2" /> Reset
                 </Button>
               </div>
@@ -285,17 +293,17 @@ export default function BiblePageMenu() {
 
                   <div className="flex gap-2">
                     <Link href={`/bible/${bible.id}`} className="flex-1">
-                      <Button className="w-full bg-[#252525] hover:bg-[#333] text-white">
+                      <Button className="w-full bg-[#252525] hover:bg-[#333] text-white rounded-xl">
                         Read <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </Link>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button className="bg-[#252525] hover:bg-[#333] px-3">
+                        <Button className="bg-[#252525] hover:bg-[#333] px-3 rounded-xl">
                           <Download className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-[#252525] border-gray-700">
+                      <DropdownMenuContent align="end" className="bg-[#252525] border-gray-700 rounded-xl">
                         <DropdownMenuLabel>Download Format</DropdownMenuLabel>
                         <DropdownMenuSeparator className="bg-gray-700" />
                         <DropdownMenuItem className="hover:bg-[#333] cursor-pointer">
@@ -333,7 +341,7 @@ export default function BiblePageMenu() {
                   <li className="flex items-start">
                     <span className="text-[#d63736] mr-2">•</span>
                     <span>
-                      All Bible texts are provided in XML format for easy integration with presentation software
+                      All Bible texts are provided in XML & JSON format for easy integration with presentation software
                     </span>
                   </li>
                   <li className="flex items-start">
