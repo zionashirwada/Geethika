@@ -1,18 +1,6 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import TranslationInterface from "@/components/translation-interface"
+import { tanglishToUnicode } from "@/translators/TanglishToUnicode"
 
-// This is a mock conversion function - replace with actual implementation
-const mockConvertTanglishToUnicode = (text: string) => {
-  // This is just a placeholder that adds "Unicode: " to each line
-  // Replace with actual conversion logic
-  if (!text) return ""
-  return text
-    .split("\n")
-    .map((line) => (line ? `Unicode: ${line}` : ""))
-    .join("\n")
-}
 
 export default function TanglishToUnicodePage() {
   return (
@@ -26,7 +14,7 @@ export default function TanglishToUnicodePage() {
             fromLabel="Tanglish Text"
             toLabel="Tamil Unicode Text"
             placeholder="Enter or paste your Tanglish text here..."
-            convertFunction={mockConvertTanglishToUnicode}
+            convertFunction={tanglishToUnicode}
           />
 
           {/* Additional Information */}

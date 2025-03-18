@@ -1,18 +1,7 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import TranslationInterface from "@/components/translation-interface"
+import { kaputaToUnicode } from "@/translators/KaputaToUnicode"
 
-// This is a mock conversion function - replace with actual implementation
-const mockConvertKaputaToUnicode = (text: string) => {
-  // This is just a placeholder that adds "Unicode: " to each line
-  // Replace with actual conversion logic
-  if (!text) return ""
-  return text
-    .split("\n")
-    .map((line) => (line ? `Unicode: ${line}` : ""))
-    .join("\n")
-}
+
 
 export default function KaputaToUnicodePage() {
   return (
@@ -26,7 +15,7 @@ export default function KaputaToUnicodePage() {
             fromLabel="Kaputa Font Text"
             toLabel="Sinhala Unicode Text"
             placeholder="Enter or paste your Kaputa font text here..."
-            convertFunction={mockConvertKaputaToUnicode}
+            convertFunction={kaputaToUnicode}
           />
 
           {/* Additional Information */}

@@ -1,19 +1,7 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import TranslationInterface from "@/components/translation-interface"
+import { fmAbayaToUnicode } from "@/translators/FmToUnicode"
 
 
-// This is a mock conversion function - replace with actual implementation
-const mockConvertFMToUnicode = (text: string) => {
-  // This is just a placeholder that adds "Unicode: " to each line
-  // Replace with actual conversion logic
-  if (!text) return ""
-  return text
-    .split("\n")
-    .map((line) => (line ? `Unicode: ${line}` : ""))
-    .join("\n")
-}
 
 export default function FmToUnicodePage() {
   return (
@@ -25,11 +13,11 @@ export default function FmToUnicodePage() {
         <div className="max-w-6xl mx-auto">
           <TranslationInterface
             title="FM to Unicode Converter"
-            description="Convert Tamil text in FM font format to Unicode standard for better compatibility with modern digital platforms."
+            description="Convert Sinhala text in FM font format to Unicode standard for better compatibility with modern digital platforms."
             fromLabel="FM Font Text"
-            toLabel="Tamil Unicode Text"
+            toLabel="Sinhala Unicode Text"
             placeholder="Enter or paste your FM font text here..."
-            convertFunction={mockConvertFMToUnicode}
+            convertFunction={fmAbayaToUnicode}
           />
 
           {/* Additional Information */}
@@ -38,11 +26,11 @@ export default function FmToUnicodePage() {
               <h2 className="text-xl font-bold mb-4">About Unicode</h2>
               <p className="text-gray-300 mb-4">
                 Unicode is the modern standard for text encoding that supports all languages and scripts. Converting
-                from legacy FM font to Unicode ensures your Tamil text is compatible with modern websites, applications,
+                from legacy FM font to Unicode ensures your Sinhala text is compatible with modern websites, applications,
                 and devices.
               </p>
               <p className="text-gray-300">
-                This converter helps you transform FM font encoded text into standard Tamil Unicode, making it usable
+                This converter helps you transform FM font encoded text into standard Sinhala Unicode, making it usable
                 across all modern platforms while preserving proper formatting.
               </p>
             </div>

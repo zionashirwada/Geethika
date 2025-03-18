@@ -1,18 +1,6 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import TranslationInterface from "@/components/translation-interface"
+import { UnicodeToBamini } from "@/translators/UnicodeToBamini"
 
-// This is a mock conversion function - replace with actual implementation
-const mockConvertUnicodeToBamini = (text: string) => {
-  // This is just a placeholder that adds "Bamini: " to each line
-  // Replace with actual conversion logic
-  if (!text) return ""
-  return text
-    .split("\n")
-    .map((line) => (line ? `Bamini: ${line}` : ""))
-    .join("\n")
-}
 
 export default function UnicodeToBaminiPage() {
   return (
@@ -26,7 +14,7 @@ export default function UnicodeToBaminiPage() {
             fromLabel="Tamil Unicode Text"
             toLabel="Bamini Font Text"
             placeholder="Enter or paste your Tamil Unicode text here..."
-            convertFunction={mockConvertUnicodeToBamini}
+            convertFunction={UnicodeToBamini}
           />
 
           {/* Additional Information */}

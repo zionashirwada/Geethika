@@ -1,18 +1,6 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import TranslationInterface from "@/components/translation-interface"
+import { singlishToUnicode } from "@/translators/SinglishToUnicode"
 
-// This is a mock conversion function - replace with actual implementation
-const mockConvertSinglishToUnicode = (text: string) => {
-  // This is just a placeholder that adds "Unicode: " to each line
-  // Replace with actual conversion logic
-  if (!text) return ""
-  return text
-    .split("\n")
-    .map((line) => (line ? `Unicode: ${line}` : ""))
-    .join("\n")
-}
 
 export default function SinglishToUnicodePage() {
   return (
@@ -26,7 +14,7 @@ export default function SinglishToUnicodePage() {
             fromLabel="Singlish Text"
             toLabel="Sinhala Unicode Text"
             placeholder="Enter or paste your Singlish text here..."
-            convertFunction={mockConvertSinglishToUnicode}
+            convertFunction={singlishToUnicode}
           />
 
           {/* Additional Information */}

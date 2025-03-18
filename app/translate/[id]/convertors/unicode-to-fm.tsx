@@ -1,18 +1,6 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import TranslationInterface from "@/components/translation-interface"
+import { convertText } from "@/translators/UnicodeToSinhala"
 
-// This is a mock conversion function - replace with actual implementation
-const mockConvertUnicodeToFM = (text: string) => {
-  // This is just a placeholder that adds "FM: " to each line
-  // Replace with actual conversion logic
-  if (!text) return ""
-  return text
-    .split("\n")
-    .map((line) => (line ? `FM: ${line}` : ""))
-    .join("\n")
-}
 
 export default function UnicodeToFMPage() {
   return (
@@ -26,7 +14,7 @@ export default function UnicodeToFMPage() {
             fromLabel="Tamil Unicode Text"
             toLabel="FM Font Text"
             placeholder="Enter or paste your Tamil Unicode text here..."
-            convertFunction={mockConvertUnicodeToFM}
+            convertFunction={convertText}
           />
 
           {/* Additional Information */}
@@ -57,7 +45,7 @@ export default function UnicodeToFMPage() {
         </div>
       </main>
 
-      
+
     </div>
   )
 }

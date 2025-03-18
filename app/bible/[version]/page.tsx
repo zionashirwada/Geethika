@@ -242,12 +242,13 @@ export default function BibleReadingPage() {
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <main className="container mx-auto py-12 px-4">
         <div className="max-w-6xl mx-auto">
+          
           {/* Back Button */}
           <div className="mb-6">
             <Link href="/bible">
               <Button variant="outline" className="flex items-center gap-2 rounded-xl">
                 <ArrowLeft className="h-4 w-4" />
-                Back to Bible Versions
+                Back
               </Button>
             </Link>
           </div>
