@@ -10,6 +10,8 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Music, Play, ChevronLeft, ChevronRight, Headphones, User, Disc3 } from "lucide-react"
+import { featuredArtists } from '@/data/featuredArtists';
+import { spotifyPlaylists } from '@/data/spotifyPlaylists';
 
 // Mock data for hymns
 const allHymns = [
@@ -40,50 +42,6 @@ const allHymns = [
   { id: 25, title: "Blessed Be Your Name", artist: "Matt Redman", language: "English", duration: "4:16" },
 ]
 
-// Mock data for featured artists
-const featuredArtists = [
-  { id: 1, name: "Hillsong Worship", image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=100&width=100", spotifyUrl: "#" },
-  { id: 2, name: "Joel Thomasraj", image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=100&width=100", spotifyUrl: "#" },
-  { id: 3, name: "Lakshman Jayawardena", image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=100&width=100", spotifyUrl: "#" },
-  { id: 4, name: "Matt Redman", image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=100&width=100", spotifyUrl: "#" },
-  { id: 5, name: "Gersson Edinbaro", image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=100&width=100", spotifyUrl: "#" },
-]
-
-// Mock data for Spotify playlists
-const spotifyPlaylists = [
-  {
-    id: 1,
-    title: "Tamil Christian Worship",
-    description: "Best Tamil worship songs collection",
-    image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=300&width=300",
-    spotifyUrl: "#",
-    tracks: 45,
-  },
-  {
-    id: 2,
-    title: "Sinhala Praise",
-    description: "Top Sinhala Christian songs",
-    image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=300&width=300",
-    spotifyUrl: "#",
-    tracks: 32,
-  },
-  {
-    id: 3,
-    title: "English Hymns Collection",
-    description: "Classic and contemporary English hymns",
-    image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=300&width=300",
-    spotifyUrl: "#",
-    tracks: 50,
-  },
-  {
-    id: 4,
-    title: "Multilingual Worship",
-    description: "Worship songs in multiple languages",
-    image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=300&width=300",
-    spotifyUrl: "#",
-    tracks: 28,
-  },
-]
 
 export default function HymnsPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
