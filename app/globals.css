@@ -27,7 +27,8 @@ body {
 .sidebar {
   background-color: var(--sidebar);
   width: 260px;
-  height: calc(100vh - 5rem);
+  height: auto;
+  min-height: calc(100vh - 5rem);
   position: fixed;
   left: 0;
   top: 0;
@@ -69,7 +70,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 24px;
+  padding: 8px 24px;
   color: #9ca3af;
   transition: all 0.3s ease;
   border-radius: 8px;
@@ -88,7 +89,7 @@ body {
 .section-title {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #9ca3af;
+  color: white;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin: 24px 24px 12px;
