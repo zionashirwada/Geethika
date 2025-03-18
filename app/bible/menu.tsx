@@ -129,31 +129,30 @@ export default function BiblePageMenu() {
                 key={bible.id}
                 className="bg-[#1a1a1a] rounded-xl border border-gray-800 overflow-hidden hover:border-[#d63736] transition-colors"
               >
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center">
-                      <span
-                        className={`px-2 py-1 text-xs font-bold rounded-full mr-2 ${
-                          bible.language === "English"
-                            ? "bg-blue-900/30 text-blue-400"
-                            : bible.language === "Tamil"
-                              ? "bg-yellow-900/30 text-yellow-400"
-                              : "bg-green-900/30 text-green-400"
-                        }`}
-                      >
-                        {bible.language}
-                      </span>
-                     
+                <div className="p-6 flex flex-col h-full">
+                  <div>
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center">
+                        <span
+                          className={`px-2 py-1 text-xs font-bold rounded-full mr-2 ${
+                            bible.language === "English"
+                              ? "bg-blue-900/30 text-blue-400"
+                              : bible.language === "Tamil"
+                                ? "bg-yellow-900/30 text-yellow-400"
+                                : "bg-green-900/30 text-green-400"
+                          }`}
+                        >
+                          {bible.language}
+                        </span>
+                       
+                      </div>
+                      <span className="text-xs text-gray-400">{bible.year}</span>
                     </div>
-                    <span className="text-xs text-gray-400">{bible.year}</span>
-                  </div>
-
-                  <h2 className="text-xl font-bold mb-2">{bible.title}</h2>
-                  <p className="text-gray-300 text-sm mb-4">{bible.description}</p>
-
   
-
-                  <div className="flex gap-2">
+                    <h2 className="text-xl font-bold mb-2">{bible.title}</h2>
+                    <p className="text-gray-300 text-sm mb-4">{bible.description}</p>
+                  </div>
+                  <div className="mt-auto flex gap-2">
                     <Link href={`/bible/${bible.id}`} className="flex-1">
                       <Button className="w-full bg-[#252525] hover:bg-[#333] text-white rounded-xl">
                         Read <ChevronRight className="h-4 w-4 ml-1" />
@@ -171,10 +170,10 @@ export default function BiblePageMenu() {
                         <DropdownMenuItem className="hover:bg-[#333] cursor-pointer">
                           <FileJson className="h-4 w-4 mr-2" /> JSON Format
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-[#333] cursor-pointer">
+                        <DropdownMenuItem className="hover:bg-[#333] cursor-pointer" disabled>
                           <FileCode className="h-4 w-4 mr-2" /> XML Format
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-[#333] cursor-pointer">
+                        <DropdownMenuItem className="hover:bg-[#333] cursor-pointer" disabled>
                           <FilePdf className="h-4 w-4 mr-2" /> PDF Format
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -197,7 +196,7 @@ export default function BiblePageMenu() {
                 <h2 className="text-2xl font-bold mb-4">About Our Bible Resources</h2>
                 <p className="text-gray-300 mb-4">
                   Our Bible resources are provided to help churches and individuals access Scripture in their preferred
-                  language. The XML downloads are compatible with most church presentation software.
+                  language. The JSON/XML downloads are compatible with most church presentation software.
                 </p>
                 <ul className="space-y-2 text-gray-300">
                   <li className="flex items-start">
@@ -216,7 +215,11 @@ export default function BiblePageMenu() {
                   </li>
                   <li className="flex items-start">
                     <span className="text-[#d63736] mr-2">•</span>
-                    <span>We regularly update our translations to ensure accuracy and clarity</span>
+                    <span>We regularly update our translations to ensure accuracy and clarity,If you have any bible request Please Contact us</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#d63736] mr-2">•</span>
+                    <span>The ownership of the Bibles goes to the respective Publishers</span>
                   </li>
                 </ul>
               </div>
