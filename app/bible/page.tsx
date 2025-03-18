@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Menu } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import UnderDevelopment from '@/components/UnderDev';
 
 export default function BiblePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,7 +30,7 @@ export default function BiblePage() {
 
       {/* Main Content */}
       <main className="main-content flex-1 ml-0 md:ml-[280px]">
-        <div>Bible page</div>
+     <UnderDevelopment />
       </main>
 
       {/* Hamburger Button for Mobile */}
