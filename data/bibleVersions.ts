@@ -1,11 +1,11 @@
 export const bibleVersions = [
   {
-    id: "kjv",
-    title: "King James Version (KJV)",
-    description: "The King James Version (KJV) is an English translation of the Christian Bible completed in 1611.",
+    id: "nkjv",
+    title: "New King James Version (NKJV)",
+    description: "The New King James Version (NKJV) is a modern translation of the Bible that updates the vocabulary and grammar of the original King James Version.",
     language: "English",
-    year: 1611,
-    location:"@data/bible/kjv",
+    year: 1982,
+    location:"@data/bibles/NKJV.json",
    
   },
   {
@@ -14,8 +14,17 @@ export const bibleVersions = [
     description: "The New International Version (NIV) is an English translation of the Bible first published in 1978.",
     language: "English",
     year: 1978,
-    location:"@data/bible/niv",
+    location:"@data/bibles/NIV.json",
    
   },
+  {
+    id:"srov",
+    title:"Sinhala Revised Version (SRV)",
+    description:"The Sinhala Revised Version (SRV) is a Sinhala translation of the Bible published in 1995.",
+    
+    language: "Sinhala",
+    year: 1995,
+    location: "@data/bibles/SROV.json",
+  }
  
 ]
