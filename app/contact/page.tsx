@@ -23,7 +23,7 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormState((prev) => ({
       ...prev,
@@ -31,14 +31,14 @@ export default function ContactPage() {
     }))
   }
 
-  const handleTopicChange = (value) => {
+  const handleTopicChange = (value: string) => {
     setFormState((prev) => ({
       ...prev,
       topic: value,
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
 

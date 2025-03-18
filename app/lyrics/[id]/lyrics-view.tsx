@@ -14,6 +14,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
+// Add TypeScript declaration for the global window object
+declare global {
+  interface Window {
+    copyVerse: ((verse: string) => void) | undefined;  // Fixed declaration
+  }
+}
+
 export function LyricsView({ id }: { id: string }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('unicode');
@@ -26,13 +33,13 @@ export function LyricsView({ id }: { id: string }) {
   }, [id]);
 
   const extractNotes = (content: string) => {
-    const notesMatch = content.match(/<notes>(.*?)<\/notes>/s);
+    const notesMatch = content.match(/<notes>[\s\S]*?<\/notes>/);  // Using [\s\S] instead of /s flag
     return notesMatch ? notesMatch[1] : null;
   };
 
   const formatLyrics = (content: string) => {
     // Remove notes section from display content
-    const contentWithoutNotes = content.replace(/<notes>.*?<\/notes>/s, '');
+    const contentWithoutNotes = content.replace(/<notes>[\s\S]*?<\/notes>/, '');
     
     // Split by double line breaks to get paragraphs
     const paragraphs = contentWithoutNotes.split(/\r\n\r\n/);
@@ -65,7 +72,7 @@ export function LyricsView({ id }: { id: string }) {
   // Function for FM font conversion
   const formatLyricsWithFMFont = (content: string) => {
     // Remove notes section from display content
-    const contentWithoutNotes = content.replace(/<notes>.*?<\/notes>/s, '');
+    const contentWithoutNotes = content.replace(/<notes>[\s\S]*?<\/notes>/, '');
     
     // Split by double line breaks to get paragraphs
     const paragraphs = contentWithoutNotes.split(/\r\n\r\n/);
@@ -100,7 +107,7 @@ export function LyricsView({ id }: { id: string }) {
   // Function for Bamini font conversion
   const formatLyricsWithBaminiFont = (content: string) => {
     // Remove notes section from display content
-    const contentWithoutNotes = content.replace(/<notes>.*?<\/notes>/s, '');
+    const contentWithoutNotes = content.replace(/<notes>[\s\S]*?<\/notes>/, '');
     
     // Split by double line breaks to get paragraphs
     const paragraphs = contentWithoutNotes.split(/\r\n\r\n/);
@@ -157,7 +164,7 @@ export function LyricsView({ id }: { id: string }) {
     
     // Cleanup function
     return () => {
-      delete window.copyVerse;
+      window.copyVerse = undefined;  // Set to undefined instead of using delete
     };
   }, []);
 
@@ -168,7 +175,7 @@ export function LyricsView({ id }: { id: string }) {
   const notes = extractNotes(song.Content);
 
   return (
-    <main >
+    <main>
     <div className="max-w-4xl mx-auto">
       <h1 className="text-4xl font-bold text-white mb-4">
         {song.Display_Name}
@@ -215,7 +222,7 @@ export function LyricsView({ id }: { id: string }) {
             onClick={() => {
               // Remove all formatting tags for plain text copy
               const plainContent = song.Content
-                .replace(/<notes>.*?<\/notes>/s, '')
+                .replace(/<notes>[\s\S]*?<\/notes>/, '')
                 .replace(/<c>(.*?)<\/c>/g, '$1')
                 .replace(/<cr>(.*?)<\/cr>/g, '$1')
                 .replace(/<chorus>(.*?)<\/chorus>/g, '$1');
@@ -228,7 +235,7 @@ export function LyricsView({ id }: { id: string }) {
             Copy All
           </button>
           <div
-            className="w-full rounded-xl bg-[#161616] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap"
+            className="w-full rounded-xl bg-[#161616] text-white p-4 overflow-y-auto whitespace-pre-wrap"
             dangerouslySetInnerHTML={{ __html: formatLyrics(song.Content) }}
           />
         </TabsContent>
@@ -238,7 +245,7 @@ export function LyricsView({ id }: { id: string }) {
             onClick={() => {
               // Remove all formatting tags for plain text copy
               const plainContent = song.Content
-                .replace(/<notes>.*?<\/notes>/s, '')
+                .replace(/<notes>[\s\S]*?<\/notes>/, '')
                 .replace(/<c>(.*?)<\/c>/g, '$1')
                 .replace(/<cr>(.*?)<\/cr>/g, '$1')
                 .replace(/<chorus>(.*?)<\/chorus>/g, '$1');
@@ -253,10 +260,9 @@ export function LyricsView({ id }: { id: string }) {
             Copy All
           </button>
           <div
-            className="w-full rounded-xl bg-[#161616] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap font-fm"
+            className="w-full rounded-xl bg-[#161616] text-white p-4 overflow-y-auto whitespace-pre-wrap font-fm font-['FM-Malithi,FM-Abhaya,serif']"
             dangerouslySetInnerHTML={{ __html: formatLyricsWithFMFont(song.Content) }}
-            style={{ fontFamily: "FM-Malithi, FM-Abhaya, serif" }}
-          />
+        />
         </TabsContent>
         <TabsContent value="tamil" className="mt-4 relative">
           <button
@@ -264,7 +270,7 @@ export function LyricsView({ id }: { id: string }) {
             onClick={() => {
               // Remove all formatting tags for plain text copy
               const plainContent = song.Content
-                .replace(/<notes>.*?<\/notes>/s, '')
+                .replace(/<notes>[\s\S]*?<\/notes>/, '')
                 .replace(/<c>(.*?)<\/c>/g, '$1')
                 .replace(/<cr>(.*?)<\/cr>/g, '$1')
                 .replace(/<chorus>(.*?)<\/chorus>/g, '$1');
@@ -279,20 +285,12 @@ export function LyricsView({ id }: { id: string }) {
             Copy All
           </button>
           <div
-            className="w-full rounded-xl bg-[#161616] text-white p-4 rounded-lg overflow-y-auto whitespace-pre-wrap tamil-font"
+            className="w-full rounded-xl bg-[#161616] text-white p-4 overflow-y-auto whitespace-pre-wrap tamil-font font-['Bamini,TSC_Avarangal,serif']"
             dangerouslySetInnerHTML={{ __html: formatLyricsWithBaminiFont(song.Content) }}
-            style={{ fontFamily: "Bamini, TSC_Avarangal, serif" }}
           />
         </TabsContent>
       </Tabs>
     </div>
   </main>
   );
-}
-
-// Add TypeScript declaration for the global window object
-declare global {
-  interface Window {
-    copyVerse: (verse: string) => void;
-  }
 }

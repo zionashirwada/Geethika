@@ -59,6 +59,6 @@ export function ConvertView({ id }: { id: string }) {
 // Add TypeScript declaration for the global window object
 declare global {
   interface Window {
-    copyVerse: (verse: string) => void;
+    copyVerse: ((verse: string) => void) | undefined;  // Make the property optional
   }
 }
