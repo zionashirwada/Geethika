@@ -10,6 +10,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Geethika - Worship Resources for Your Church',
   description: 'Your personal music database',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({

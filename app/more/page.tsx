@@ -11,90 +11,119 @@ import { ExternalLink } from "lucide-react"
 export default function MorePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const tools = [
-    {
-      name: "Kithunu Gee Potha",
-      description: "A comprehensive lyrics software specifically designed for Tamil and Sinhala Christian songs.",
-      features: [
-        "Extensive library of Tamil and Sinhala hymns",
-        "Easy search functionality by title, lyrics, or theme",
-        "Export options for various presentation software",
-        "Offline access to all lyrics",
-        "Regular updates with new songs",
-      ],
-      image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
-      tag: "Free",
-      tagColor: "bg-green-500",
-    },
-    {
-      name: "EasyWorship",
-      description: "Professional church presentation software used by thousands of churches worldwide.",
-      features: [
-        "Seamless integration with live video feeds",
-        "Built-in Bible module with multiple translations",
-        "Advanced song scheduling and service planning",
-        "Custom theme and template creation",
-        "Dual-screen output for operator and audience views",
-      ],
-      image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
-      tag: "Paid",
-      tagColor: "bg-blue-500",
-    },
-    {
-      name: "PraiseCast",
-      description: "A free presentation software designed specifically for churches and worship settings.",
-      features: [
-        "Simple, intuitive interface for quick setup",
-        "Support for multiple media types including videos and images",
-        "Built-in song database with common worship songs",
-        "Scripture display with various translations",
-        "Cloud storage for accessing your presentations anywhere",
-      ],
-      image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
-      tag: "Free",
-      tagColor: "bg-green-500",
-    },
-    {
-      name: "Presenter",
-      description: "Professional presentation software by Worship Tools designed for church environments.",
-      features: [
-        "Advanced slide transitions and animations",
-        "Comprehensive media library management",
-        "Remote control via mobile devices",
-        "Automatic song verse detection",
-        "Integrated chord and lyric display for worship teams",
-      ],
-      image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
-      tag: "Freemium",
-      tagColor: "bg-purple-500",
-    },
-    {
-      name: "WorshipConnect",
-      description: "Complete worship team management application for scheduling, communication, and resource sharing.",
-      features: [
-        "Team scheduling with availability tracking",
-        "Song arrangement sharing with chord charts",
-        "In-app messaging for team communication",
-        "Practice tracks and recording sharing",
-        "Service planning with collaborative editing",
-      ],
-      image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
-      tag: "Freemium",
-      tagColor: "bg-purple-500",
-    },
-    {
-      name: "Hearing Grace",
-      description: "Christian podcast featuring discussions on theology, worship, and church ministry.",
-      features: [
-        "Weekly episodes with expert guests",
-        "Downloadable resources mentioned in episodes",
-        "Discussion guides for small groups",
-        "Searchable archive of past episodes by topic",
-        "Exclusive bonus content for subscribers",
-      ],
-      image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
-      tag: "Free",
-      tagColor: "bg-green-500",
-    },
+      {
+        "name": "Kithunu Gee Potha",
+        "description": "A Sinhala Christian hymn lyrics application available on Android, Windows, and online, providing a vast collection of hymns with search and sharing features.",
+        "features": [
+          "Database of over 770 Sinhala and 400 English hymns",
+          "Zoom in/out to adjust text size",
+          "Audio for select hymns",
+          "Favorite list and sharing options",
+          "Offline access (except for audio hymns)"
+        ],
+        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "tag": "Free",
+        "tagColor": "bg-green-500"
+      },
+      {
+        "name": "EasyWorship",
+        "description": "A powerful church presentation software designed for worship services, integrating lyrics, scriptures, videos, and live streaming.",
+        "features": [
+          "Display song lyrics, videos, and slides",
+          "Integrate lyrics, scriptures, and videos with service schedules",
+          "Create or import shadow slides using the Presentation Editor or PowerPoint",
+          "NDI integration for live streaming",
+          "CCLI and MIDI integration for song management"
+        ],
+        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "tag": "Paid",
+        "tagColor": "bg-blue-500"
+      },
+      {
+        "name": "Freeshow",
+        "description": "A free and open-source church presentation software supported by donations, offering powerful customization and multi-output support.",
+        "features": [
+          "Powerful editing with unlimited customization",
+          "Auto-play and countdown timers for scheduled playback",
+          "Multi-output support (online, auditorium, stage)",
+          "Bible and song integration",
+          "Compatibility with PowerPoint, ProPresenter, and other software"
+        ],
+        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "tag": "Free",
+        "tagColor": "bg-green-500"
+      },
+      {
+        "name": "Presenter by Worship Tools",
+        "description": "A cloud-based church presentation software that allows remote access, multi-output support, and motion graphics for worship services.",
+        "features": [
+          "Cloud connectivity for access from anywhere",
+          "Support for multiple outputs",
+          "Motion graphics for creative designs",
+          "Integration with CCLI and SongSelect",
+          "Remote control and stage display options"
+        ],
+        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "tag": "Freemium",
+        "tagColor": "bg-purple-500"
+      },
+      {
+        "name": "The Holy Bible (Sinhala ROV 1995)",
+        "description": "The Sinhala Revised Old Version (ROV) of the Bible, available online and as an app, offering a free resource for Sinhala-speaking Christians.",
+        "features": [
+          "Available in Sinhala language",
+          "Text search functionality",
+          "Bookmark favorite verses",
+          "Share via email or social media",
+          "Customizable font styles and themes"
+        ],
+        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "tag": "Free",
+        "tagColor": "bg-green-500"
+      },
+      {
+        "name": "Kithu Bathi Gee Dahana",
+        "description": "A Sinhala Christian hymn app featuring hymns with guitar and organ chords, available for free on Android and iOS.",
+        "features": [
+          "Database of Sinhala Christian hymns with chords",
+          "Search functionality for hymns",
+          "View guitar and organ chords",
+          "Sharing options",
+          "Offline access (assumed)"
+        ],
+        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "tag": "Free",
+        "tagColor": "bg-green-500"
+      },
+    
+    // {
+    //   name: "WorshipConnect",
+    //   description: "Complete worship team management application for scheduling, communication, and resource sharing.",
+    //   features: [
+    //     "Team scheduling with availability tracking",
+    //     "Song arrangement sharing with chord charts",
+    //     "In-app messaging for team communication",
+    //     "Practice tracks and recording sharing",
+    //     "Service planning with collaborative editing",
+    //   ],
+    //   image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+    //   tag: "Freemium",
+    //   tagColor: "bg-purple-500",
+    // },
+    // {
+    //   name: "Hearing Grace",
+    //   description: "Christian podcast featuring discussions on theology, worship, and church ministry.",
+    //   features: [
+    //     "Weekly episodes with expert guests",
+    //     "Downloadable resources mentioned in episodes",
+    //     "Discussion guides for small groups",
+    //     "Searchable archive of past episodes by topic",
+    //     "Exclusive bonus content for subscribers",
+    //   ],
+    //   image: "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+    //   tag: "Free",
+    //   tagColor: "bg-green-500",
+    // },
   ]
   return (
     <main >

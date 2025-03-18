@@ -73,7 +73,7 @@ export default function AboutPage() {
               </p>
               <p className="text-gray-300 mb-4">The resources we've utilized include:</p>
               <ul className="list-disc pl-6 text-gray-300 mb-4">
-                <li>Hymn lyrics collected from various online repositories and church websites</li>
+                <li>Hymn lyrics collected from various online repositories and websites</li>
                 <li>Bible translations from publicly available sources</li>
                 <li>Translation technologies and font conversion tools sourced from open repositories</li>
                 <li>Audio recordings of hymns from various online archives</li>
