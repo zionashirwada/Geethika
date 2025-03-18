@@ -54,35 +54,35 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <BookText size={20} />
           {isOpen && <span>Lyrics</span>}
         </a>
-        <a href="/bible" className={`sidebar-link transition-all duration-300 ${pathname === '/bible' ? 'active' : ''}`} title={!isOpen ? "Bible" : ""}>
+        <a href="/bible" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/bible') ? 'active' : ''}`} title={!isOpen ? "Bible" : ""}>
           <BookOpen size={20} />
           {isOpen && <span>Bible</span>}
         </a>
-        <a href="/hymns" className={`sidebar-link transition-all duration-300 ${pathname === '/hymns' ? 'active' : ''}`} title={!isOpen ? "Hymns" : ""}>
+        <a href="/hymns" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/hymns') ? 'active' : ''}`} title={!isOpen ? "Hymns" : ""}>
           <Music size={20} />
           {isOpen && <span>Hymns</span>}
         </a>
-        <a href="/translate" className={`sidebar-link transition-all duration-300 ${pathname === '/translate' ? 'active' : ''}`} title={!isOpen ? "Translate" : ""}>
+        <a href="/translate" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/translate') ? 'active' : ''}`} title={!isOpen ? "Translate" : ""}>
           <Languages size={20} />
           {isOpen && <span>Convert Font</span>}  
         </a>
       </div>
 
       <div className={`section-title ${!isOpen && 'hidden'} transition-all duration-300`}>Other</div>
-      <a href="/more" className={`sidebar-link transition-all duration-300 ${pathname === '/more' ? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
+      <a href="/more" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/more' )? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
         <Hammer size={20} />
         {isOpen && <span>More Tools</span>}
       </a>
-      <a href="/about" className={`sidebar-link transition-all duration-300 ${pathname === '/about' ? 'active' : ''}`} title={!isOpen ? "About" : ""}>
+      <a href="/about" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/about') ? 'active' : ''}`} title={!isOpen ? "About" : ""}>
         <Info size={20} />
         {isOpen && <span>About</span>}
       </a>
-      <a href="/contact" className={`sidebar-link transition-all duration-300 ${pathname === '/contact' ? 'active' : ''}`} title={!isOpen ? "Contact" : ""}>
+      <a href="/contact" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/contact') ? 'active' : ''}`} title={!isOpen ? "Contact" : ""}>
         <Globe size={20} />
         {isOpen && <span>Contact</span>}
       </a>
      
-      <a href="/add" className={`sidebar-link transition-all duration-300 ${pathname === '/add' ? 'active' : ''}`} title={!isOpen ? "Contribute" : ""}>
+      <a href="/add" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/add') ? 'active' : ''}`} title={!isOpen ? "Contribute" : ""}>
         <PlusCircle size={20} />
         {isOpen && <span>Contribute</span>}
       </a>
