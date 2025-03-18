@@ -109,7 +109,7 @@ export default function HymnsPage() {
   const paginatedHymns = filteredHymns.slice(startIndex, startIndex + itemsPerPage)
 
   // Handle page change
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
@@ -206,63 +206,74 @@ export default function HymnsPage() {
           </div>
 
           {/* Hymns List Section */}
-          <div className="bg-[#1a1a1a] rounded-xl border border-gray-800 mb-8 overflow-hidden">
-            <div className="p-4 bg-[#252525] flex items-center">
-              <h2 className="text-xl font-bold flex items-center">
-                <Music className="mr-2 text-[#d63736]" /> Hymns
-              </h2>
-              <div className="ml-auto text-sm text-gray-400">{filteredHymns.length} results</div>
+
+          {/* UNDER DEV........... */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/90 z-10 pointer-events-none"></div>
+            <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+              <UnderDevelopment />
             </div>
-
-            {paginatedHymns.length > 0 ? (
-              <div className="divide-y divide-gray-800">
-                {paginatedHymns.map((hymn) => (
-                  <div key={hymn.id} className="p-4 hover:bg-[#252525] transition-colors flex items-center">
-                    <div className="w-10 h-10 bg-[#252525] rounded-full flex items-center justify-center mr-4">
-                      <Play className="h-5 w-5 text-[#d63736]" />
-                    </div>
-                    <div className="flex-grow">
-                      <h3 className="font-bold">{hymn.title}</h3>
-                      <p className="text-sm text-gray-400">{hymn.artist}</p>
-                    </div>
-                    <div className="text-sm text-gray-400 mr-4">{hymn.language}</div>
-                    <div className="text-sm text-gray-400 flex items-center">
-                      <Headphones className="h-4 w-4 mr-1" />
-                      {hymn.duration}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-8 text-center text-gray-400">
-                No hymns found matching your search criteria. Try adjusting your filters.
-              </div>
-            )}
-
-            {/* Pagination */}
-            {filteredHymns.length > 0 && (
-              <div className="p-4 bg-[#252525] flex items-center justify-between">
-                <Button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="bg-[#333] hover:bg-[#444] disabled:opacity-50"
-                >
-                  <ChevronLeft className="h-4 w-4 mr-1" /> Previous
-                </Button>
-
-                <div className="text-sm">
-                  Page {currentPage} of {totalPages}
+            <div className="relative z-0">
+              {/* UNDER DEV........... */}
+              <div className="bg-[#1a1a1a] rounded-xl border border-gray-800 mb-8 overflow-hidden">
+                <div className="p-4 bg-[#252525] flex items-center">
+                  <h2 className="text-xl font-bold flex items-center">
+                    <Music className="mr-2 text-[#d63736]" /> Hymns
+                  </h2>
+                  <div className="ml-auto text-sm text-gray-400">{filteredHymns.length} results</div>
                 </div>
 
-                <Button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="bg-[#333] hover:bg-[#444] disabled:opacity-50"
-                >
-                  Next <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
+                {paginatedHymns.length > 0 ? (
+                  <div className="divide-y divide-gray-800">
+                    {paginatedHymns.map((hymn) => (
+                      <div key={hymn.id} className="p-4 hover:bg-[#252525] transition-colors flex items-center">
+                        <div className="w-10 h-10 bg-[#252525] rounded-full flex items-center justify-center mr-4">
+                          <Play className="h-5 w-5 text-[#d63736]" />
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="font-bold">{hymn.title}</h3>
+                          <p className="text-sm text-gray-400">{hymn.artist}</p>
+                        </div>
+                        <div className="text-sm text-gray-400 mr-4">{hymn.language}</div>
+                        <div className="text-sm text-gray-400 flex items-center">
+                          <Headphones className="h-4 w-4 mr-1" />
+                          {hymn.duration}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-8 text-center text-gray-400">
+                    No hymns found matching your search criteria. Try adjusting your filters.
+                  </div>
+                )}
+
+                {/* Pagination */}
+                {filteredHymns.length > 0 && (
+                  <div className="p-4 bg-[#252525] flex items-center justify-between">
+                    <Button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="bg-[#333] hover:bg-[#444] disabled:opacity-50"
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" /> Previous
+                    </Button>
+
+                    <div className="text-sm">
+                      Page {currentPage} of {totalPages}
+                    </div>
+
+                    <Button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="bg-[#333] hover:bg-[#444] disabled:opacity-50"
+                    >
+                      Next <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           {/* Featured Artists Section */}
