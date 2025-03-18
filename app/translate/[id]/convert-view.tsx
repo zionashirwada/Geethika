@@ -48,47 +48,11 @@ export function ConvertView({ id }: { id: string }) {
   };
 
   return (
-    <div className="flex min-h-screen relative">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:block">
-        <Sidebar isOpen={true} />
-      </div>
-
-      {/* Mobile Sidebar and Overlay */}
-      {isMenuOpen && (
-        <>
-          <div
-            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-            onClick={() => setIsMenuOpen(false)}
-          />
-          <div className="md:hidden fixed z-50">
-            <Sidebar isOpen={true} onClose={() => setIsMenuOpen(false)} />
-          </div>
-        </>
-      )}
-
-      {/* Hamburger Button for Mobile */}
-      <Button
-        className="md:hidden fixed top-4 left-4 z-50 bg-[#d63736] hover:bg-[#e64736] p-2 rounded-full text-white shadow-lg"
-        onClick={() => setIsMenuOpen(true)}
-      >
-        <Menu size={24} />
-      </Button>
-
-      {/* Back Button */}
-      <Button
-        onClick={() => router.back()}
-        className="hidden md:flex fixed top-10 left-4 md:left-[350px] z-40 items-center gap-2 bg-[#161616]/90 backdrop-blur-sm hover:bg-[#27272A] text-gray-400 hover:text-white px-4 py-2 rounded-full transition-colors"
-      >
-        <ArrowLeft size={20} className='' />
-        Back
-      </Button>
-
-      {/* Main Content */}
-      <main className="flex-1 ml-16 p-8 md:ml-[280px]">
+ 
+      <main >
         {renderConverterPage()}
       </main>
-    </div>
+
   );
 }
 

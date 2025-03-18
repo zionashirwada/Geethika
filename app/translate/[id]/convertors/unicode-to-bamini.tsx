@@ -18,7 +18,7 @@ export default function UnicodeToBaminiPage() {
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       {/* Main Content */}
-      <main className="container mx-auto py-12 px-4">
+      <main>
         <div className="max-w-6xl mx-auto">
           <TranslationInterface
             title="Unicode to Bamini Converter"
