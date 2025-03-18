@@ -198,7 +198,7 @@ export default function LyricsPage() {
               <p className="text-gray-400">No songs found matching &quot;{searchQuery}&quot;</p>
               <Button
                 className="mt-4 bg-[#d63736] hover:bg-[#e64736] text-white rounded-xl"
-                onClick={() => router.push('/lyrics/new')}
+                onClick={() => router.push('/add')}
               >
                 Add New Song
               </Button>

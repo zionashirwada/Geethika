@@ -49,6 +49,7 @@ export default function BibleReadingPage() {
   const { version: versionId } = useParams()
   
   const bibleVersion = getBibleVersion(Array.isArray(versionId) ? versionId[0] : versionId)
+  const bibleId = bibleVersion.id
 
   const [bibleData, setBibleData] = useState<Bible | null>(null)
   const [loading, setLoading] = useState(true)
@@ -287,7 +288,20 @@ export default function BibleReadingPage() {
                   <DropdownMenuContent align="end" className="bg-[#252525] border-gray-700 rounded-xl">
                     <DropdownMenuLabel>Download Options</DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-gray-700" />
-                    <DropdownMenuItem className="hover:bg-[#333] cursor-pointer rounded-xl">
+                    <DropdownMenuItem 
+                    className="hover:bg-[#333] cursor-pointer rounded-xl"
+                    onClick={() => {
+                      // Create an anchor element
+                      const link = document.createElement("a");
+                      // Adjust the path based on where your JSON file is in the public folder
+                      link.href = `/data/bibles/${bibleId}.json`;
+                      // Set the download attribute to trigger a download rather than navigation
+                      link.setAttribute("download", `${bibleId}.json`);
+                      // Append to the document, trigger click, then remove
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}>
                       <FileJson className="h-4 w-4 mr-2" /> Full Bible (JSON)
                     </DropdownMenuItem>
                     <DropdownMenuItem className="hover:bg-[#333] cursor-pointer rounded-xl" disabled>
