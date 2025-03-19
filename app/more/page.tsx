@@ -21,7 +21,7 @@ export default function MorePage() {
           "Favorite list and sharing options",
           "Offline access (except for audio hymns)"
         ],
-        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "image": "/other/kithunugee.png",
         "tag": "Free",
         "tagColor": "bg-green-500"
       },
@@ -35,12 +35,12 @@ export default function MorePage() {
           "NDI integration for live streaming",
           "CCLI and MIDI integration for song management"
         ],
-        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "image": "/other/easy.jpeg",
         "tag": "Paid",
         "tagColor": "bg-blue-500"
       },
       {
-        "name": "Freeshow",
+        "name": "PraiseCast",
         "description": "A free and open-source church presentation software supported by donations, offering powerful customization and multi-output support.",
         "features": [
           "Powerful editing with unlimited customization",
@@ -63,7 +63,7 @@ export default function MorePage() {
           "Integration with CCLI and SongSelect",
           "Remote control and stage display options"
         ],
-        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "image": "/other/presenter.jpeg",
         "tag": "Freemium",
         "tagColor": "bg-purple-500"
       },
@@ -77,7 +77,7 @@ export default function MorePage() {
           "Share via email or social media",
           "Customizable font styles and themes"
         ],
-        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "image": "/other/srov.png",
         "tag": "Free",
         "tagColor": "bg-green-500"
       },
@@ -91,7 +91,7 @@ export default function MorePage() {
           "Sharing options",
           "Offline access (assumed)"
         ],
-        "image": "https://kzmgd59nunxtkvvci6gz.lite.vusercontent.net/placeholder.svg?height=200&width=200",
+        "image": "/other/bathigee.png",
         "tag": "Free",
         "tagColor": "bg-green-500"
       },
