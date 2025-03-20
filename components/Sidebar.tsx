@@ -82,6 +82,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <Hourglass size={20} />
         {isOpen && <span>Theology Guard</span>}
       </a>
+      <a href="/ai/soaper" className={`sidebar-link transition-all duration-300 ${pathname === '/ai/soaper' ? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
+        <Hourglass size={20} />
+        {isOpen && <span>SOAPer</span>}
+      </a>
 
       <div className={`section-title ${!isOpen && 'hidden'} transition-all duration-300`}>Other</div>
       <a href="/more" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/more' )? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
