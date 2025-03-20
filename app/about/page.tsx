@@ -101,7 +101,7 @@ export default function AboutPage() {
                 {/* Lyrics Sources */}
                 <div className="border-b border-gray-700 pb-4">
                   <h3 className="font-bold text-xl mb-3">Lyrics Sources</h3>
-                  <ul className="list-disc pl-6 text-gray-300">
+                  <ul className="list-disc pl-6 text-gray-300 underline">
                     <li><Link href="https://sanctuaryfellowshipsl.org/">Sanctuary Fellowship Church</Link></li>
                     <li><Link href="https://www.youtube.com/@aogchurchnegombo">AOG Church Negombo</Link></li>
                     <li><Link href="http://chamathwebs.com/kgp/index.asp">Kithunu Gee Potha by Chamath Webs</Link></li>
@@ -111,7 +111,7 @@ export default function AboutPage() {
                 {/* Translation Technology */}
                 <div className="border-b border-gray-700 pb-4">
                   <h3 className="font-bold text-xl mb-3">Translation & Font Technologies</h3>
-                  <ul className="list-disc pl-6 text-gray-300">
+                  <ul className="list-disc pl-6 text-gray-300 underline">
                    <li><Link href="https://github.com/Open-SL/sinhala-unicode-converter/tree/master">Project sinhala-unicode-converter by OpenSL</Link></li>
                    <li>
                     <Link href="https://ucsc.cmb.ac.lk//ltrl/services/feconverter/">LTRL - University of Colombo School of Computing</Link>
@@ -128,7 +128,7 @@ export default function AboutPage() {
                 {/* Bible Sources */}
                 <div className="border-b border-gray-700 pb-4">
                   <h3 className="font-bold text-xl mb-3">Bible Translations</h3>
-                  <ul className="list-disc pl-6 text-gray-300">
+                  <ul className="list-disc pl-6 text-gray-300 underline">
                   <li><Link href="http://www.chamathwebs.com/bible_shb_rov/index.html">SROV Bible by Chamath Webs</Link></li>
                   <li><Link href="https://shop.ceylonbiblesociety.org/">Ceylon Bible Society</Link></li>
                  
@@ -140,17 +140,15 @@ export default function AboutPage() {
                 {/* Music Sources */}
                 <div>
                   <h3 className="font-bold text-xl mb-3">Music Resources</h3>
-                  <ul className="list-disc pl-6 text-gray-300">
-                    <li>Christian Music Archive (hymn recordings)</li>
-                    <li>Traditional Worship Collection (audio files)</li>
-                    <li>Community Church Recordings (worship tracks)</li>
-                    <li>Public Domain Hymn Project (historical recordings)</li>
+                  <ul className="list-disc pl-6 text-gray-300 underline">
+                    <li><Link href="https://www.youtube.com/@sanctuaryfellowshipsl">Sanctuary Fellowship Church</Link></li>
+                    <li><Link href="https://www.spotify.com">Spotify</Link></li>
                   </ul>
                 </div>
               </div>
 
               <p className="text-gray-300 mt-6">
-                Note: The names above represent the types of sources we've utilized. We've made every effort to ensure
+                Note: The names above represent the types of sources we&apos;ve utilized. We've made every effort to ensure
                 proper attribution and respect for copyright where applicable.
               </p>
             </div>
