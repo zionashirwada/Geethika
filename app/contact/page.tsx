@@ -100,7 +100,7 @@ export default function ContactPage() {
                           onChange={handleChange}
                           placeholder="John Doe"
                           required
-                          className="bg-[#252525] border-gray-700"
+                          className="bg-[#252525] border-gray-700 rounded-xl"
                         />
                       </div>
                       <div className="space-y-2">
@@ -115,7 +115,7 @@ export default function ContactPage() {
                           onChange={handleChange}
                           placeholder="your@email.com"
                           required
-                          className="bg-[#252525] border-gray-700"
+                          className="bg-[#252525] border-gray-700 rounded-xl"
                         />
                       </div>
                     </div>
@@ -125,10 +125,10 @@ export default function ContactPage() {
                         Topic <span className="text-[#d63736]">*</span>
                       </label>
                       <Select value={formState.topic} onValueChange={handleTopicChange} required>
-                        <SelectTrigger className="bg-[#252525] border-gray-700">
+                        <SelectTrigger className="bg-[#252525] border-gray-700 rounded-xl">
                           <SelectValue placeholder="Select a topic" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-[#252525] border-gray-700 rounded-xl">
                           <SelectItem value="general">General Inquiry</SelectItem>
                           <SelectItem value="lyrics">Lyrics Contribution</SelectItem>
                           <SelectItem value="artist">Artist Feature Request</SelectItem>
@@ -151,13 +151,13 @@ export default function ContactPage() {
                         onChange={handleChange}
                         placeholder="Your message here..."
                         required
-                        className="min-h-[150px] bg-[#252525] border-gray-700"
+                        className="min-h-[150px] bg-[#252525] border-gray-700 rounded-xl"
                       />
                     </div>
 
                     <Button
                       type="submit"
-                      className="w-full bg-[#d63736] hover:bg-[#c52c2c] text-white"
+                      className="w-full bg-[#d63736] hover:bg-[#c52c2c] text-white rounded-xl"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (

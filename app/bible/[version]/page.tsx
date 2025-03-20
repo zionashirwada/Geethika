@@ -37,6 +37,7 @@ import {
 import { Bible, Book as BibleBook, Verse } from "@/types/bible"
 import { bibleVersions } from "@/data/bibleVersions"
 import { useParams } from "next/navigation"
+import BackButton from "@/components/BackButton"
 
 // Get Bible version from imported bibleVersions
 const getBibleVersion = (id: string) => {
@@ -243,15 +244,7 @@ export default function BibleReadingPage() {
       <main className="container mx-auto py-12 px-4">
         <div className="max-w-6xl mx-auto">
           
-          {/* Back Button */}
-          <div className="mb-6">
-            <Link href="/bible">
-              <Button variant="outline" className="flex items-center gap-2 rounded-xl">
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-            </Link>
-          </div>
+         <BackButton/>
 
           {/* Bible Version Info */}
           <div className="bg-[#1a1a1a] p-6 rounded-xl border border-gray-800 mb-8">

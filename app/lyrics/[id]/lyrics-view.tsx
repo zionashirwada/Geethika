@@ -1,5 +1,6 @@
 'use client';
 
+import BackButton from '@/components/BackButton';
 import Sidebar from '@/components/Sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getSongById } from '@/lib/songs';
@@ -177,6 +178,7 @@ export function LyricsView({ id }: { id: string }) {
   return (
     <main>
     <div className="max-w-4xl mx-auto">
+      <BackButton/>
       <h1 className="text-4xl font-bold text-white mb-4">
         {song.Display_Name}
         {song.Search_Name && (
