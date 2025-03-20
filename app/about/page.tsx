@@ -102,10 +102,9 @@ export default function AboutPage() {
                 <div className="border-b border-gray-700 pb-4">
                   <h3 className="font-bold text-xl mb-3">Lyrics Sources</h3>
                   <ul className="list-disc pl-6 text-gray-300">
-                    <li>Tamil Christian Lyrics Archive (online repository)</li>
-                    <li>Sinhala Hymnal Project (community collection)</li>
-                    <li>Global Worship Database (international hymn collection)</li>
-                    <li>Various church websites and worship resources</li>
+                    <li><Link href="https://sanctuaryfellowshipsl.org/">Sanctuary Fellowship Church</Link></li>
+                    <li><Link href="https://www.youtube.com/@aogchurchnegombo">AOG Church Negombo</Link></li>
+                    <li><Link href="http://chamathwebs.com/kgp/index.asp">Kithunu Gee Potha by Chamath Webs</Link></li>
                   </ul>
                 </div>
 
@@ -113,10 +112,16 @@ export default function AboutPage() {
                 <div className="border-b border-gray-700 pb-4">
                   <h3 className="font-bold text-xl mb-3">Translation & Font Technologies</h3>
                   <ul className="list-disc pl-6 text-gray-300">
-                    <li>Tamil Unicode Consortium (font conversion tools)</li>
-                    <li>Sinhala Text Processing Project (character mapping)</li>
-                    <li>Open Font Library (legacy font mappings)</li>
-                    <li>International Language Support Initiative (conversion algorithms)</li>
+                   <li><Link href="https://github.com/Open-SL/sinhala-unicode-converter/tree/master">Project sinhala-unicode-converter by OpenSL</Link></li>
+                   <li>
+                    <Link href="https://ucsc.cmb.ac.lk//ltrl/services/feconverter/">LTRL - University of Colombo School of Computing</Link>
+                   </li>
+                   <li>
+                    <Link href="https://gist.github.com/nipunadodan/92f4fac6608ff084c6367a317d1d3a1e#file-sinhala_unicode_converter-html">sinhala_unicode_converter by nipunadodan</Link>
+                   </li>
+                   <li>
+                    <Link href="https://projects.malinthe.com/converter/">Malinthe Samarakoon</Link>
+                   </li>
                   </ul>
                 </div>
 
@@ -124,10 +129,11 @@ export default function AboutPage() {
                 <div className="border-b border-gray-700 pb-4">
                   <h3 className="font-bold text-xl mb-3">Bible Translations</h3>
                   <ul className="list-disc pl-6 text-gray-300">
-                    <li>Tamil Bible Society (Tamil translations)</li>
-                    <li>Sinhala Bible Translation Committee</li>
-                    <li>Open Bible Initiative (multiple translations)</li>
-                    <li>Digital Scripture Project (XML formats)</li>
+                  <li><Link href="http://www.chamathwebs.com/bible_shb_rov/index.html">SROV Bible by Chamath Webs</Link></li>
+                  <li><Link href="https://shop.ceylonbiblesociety.org/">Ceylon Bible Society</Link></li>
+                 
+                  <li><Link href="https://sourceforge.net/projects/zefania-sharp/files/Bibles/">Zefania XML Bible Markup Language Files</Link></li>
+                 
                   </ul>
                 </div>
 
