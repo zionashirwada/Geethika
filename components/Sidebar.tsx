@@ -11,6 +11,10 @@ import {
   Languages,
   Hammer,
   Hourglass,
+  Boxes,
+  Sparkle,
+  Lightbulb,
+  Brush,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -70,22 +74,23 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       </div>
 
       <div className={`section-title ${!isOpen && 'hidden'} transition-all duration-300`}>AI Tools</div>
+      <a href="/ai/soaper" className={`sidebar-link transition-all duration-300 ${pathname === '/ai/soaper' ? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
+        <Boxes size={20} />
+        {isOpen && <span>SOAPer</span>}
+      </a>
       <a href="/ai/wwjd" className={`sidebar-link transition-all duration-300 ${pathname === '/ai/wwjd' ? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
-        <Hourglass size={20} />
+        <Sparkle size={20} />
         {isOpen && <span>WWJD</span>}
       </a>
       <a href="/ai/kids" className={`sidebar-link transition-all duration-300 ${pathname === '/ai/kids' ? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
-        <Hourglass size={20} />
+        <Brush size={20} />
         {isOpen && <span>Kids Studio</span>}
       </a>
       <a href="/ai/theology" className={`sidebar-link transition-all duration-300 ${pathname === '/ai/theology' ? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
-        <Hourglass size={20} />
+        <Lightbulb size={20} />
         {isOpen && <span>Theology Guard</span>}
       </a>
-      <a href="/ai/soaper" className={`sidebar-link transition-all duration-300 ${pathname === '/ai/soaper' ? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
-        <Hourglass size={20} />
-        {isOpen && <span>SOAPer</span>}
-      </a>
+      
 
       <div className={`section-title ${!isOpen && 'hidden'} transition-all duration-300`}>Other</div>
       <a href="/more" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/more' )? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -16,72 +16,123 @@ import {
   Download,
   Copy,
   CheckCircle,
+  AlertTriangle,
 } from "lucide-react"
 import BackButton from "@/components/BackButton"
-import UnderDevelopment from "@/components/UnderDev"
+import { useBibleBooks } from "@/hooks/useBibleBooks"
+import { useBibleChapter } from "@/hooks/useBibleChapter"
+import { SoapResult, LoadingStates } from "@/types/soaper"
 
-// Mock Bible books and chapters
-const bibleBooks = [
-  { id: "genesis", name: "Genesis", chapters: 50 },
-  { id: "exodus", name: "Exodus", chapters: 40 },
-  { id: "leviticus", name: "Leviticus", chapters: 27 },
-  { id: "numbers", name: "Numbers", chapters: 36 },
-  { id: "deuteronomy", name: "Deuteronomy", chapters: 34 },
-  { id: "matthew", name: "Matthew", chapters: 28 },
-  { id: "mark", name: "Mark", chapters: 16 },
-  { id: "luke", name: "Luke", chapters: 24 },
-  { id: "john", name: "John", chapters: 21 },
-  { id: "acts", name: "Acts", chapters: 28 },
-  { id: "romans", name: "Romans", chapters: 16 },
-  { id: "1corinthians", name: "1 Corinthians", chapters: 16 },
-  { id: "revelation", name: "Revelation", chapters: 22 },
-]
+// Bible API version (hardcoded as requested)
+const BIBLE_VERSION = "ENGWEBP"
 
 export default function SOAPerPage() {
-  const [selectedBook, setSelectedBook] = useState("")
-  const [selectedChapter, setSelectedChapter] = useState("")
-  const [fromVerse, setFromVerse] = useState("")
-  const [toVerse, setToVerse] = useState("")
+  // State for selected items
+  const [selectedBook, setSelectedBook] = useState<string>("")
+  const [selectedChapter, setSelectedChapter] = useState<string>("")
+  const [fromVerse, setFromVerse] = useState<string>("")
+  const [toVerse, setToVerse] = useState<string>("")
+  
+  // State for loading and errors
   const [isGenerating, setIsGenerating] = useState(false)
-  const [soapResult, setSoapResult] = useState<{
-    scripture: string
-    observation: string
-    application: string
-    prayer: string
-  } | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState<LoadingStates>({
+    books: false,
+    chapters: false,
+    verses: false
+  })
+  
+  // State for SOAP result and UI
+  const [soapResult, setSoapResult] = useState<SoapResult | null>(null)
   const [activeTab, setActiveTab] = useState("scripture")
   const [copied, setCopied] = useState<string | null>(null)
 
-  // Get chapters for selected book
-  const getChapters = () => {
-    const book = bibleBooks.find((b) => b.id === selectedBook)
-    return book ? Array.from({ length: book.chapters }, (_, i) => i + 1) : []
-  }
+  // Get books for the selected translation
+  const { 
+    books: bibleBooks, 
+    isLoading: booksLoading, 
+    error: booksError 
+  } = useBibleBooks(BIBLE_VERSION)
 
-  // Get verses for selected chapter (mock - would come from API)
-  const getVerses = () => {
-    return Array.from({ length: 30 }, (_, i) => i + 1) // Mock 30 verses per chapter
-  }
+  // Parse chapters from selected book
+  const [chapters, setChapters] = useState<number[]>([])
+  useEffect(() => {
+    if (selectedBook) {
+      const book = bibleBooks.find(b => b.id === selectedBook)
+      if (book) {
+        setChapters(Array.from({ length: book.numberOfChapters }, (_, i) => i + 1))
+      } else {
+        setChapters([])
+      }
+    } else {
+      setChapters([])
+    }
+  }, [selectedBook, bibleBooks])
 
-  const generateSOAP = () => {
+  // Get chapter data using our hook when a chapter is selected
+  const { 
+    verses, 
+    isLoading: versesLoading, 
+    error: versesError, 
+    getVerseRange 
+  } = useBibleChapter(
+    BIBLE_VERSION, 
+    selectedBook || null, 
+    selectedChapter ? parseInt(selectedChapter) : null
+  )
+
+  // Update loading state based on hook loading states
+  useEffect(() => {
+    setLoading({
+      books: booksLoading,
+      chapters: false,
+      verses: versesLoading
+    })
+  }, [booksLoading, versesLoading])
+
+  // Update error state based on hook errors
+  useEffect(() => {
+    setError(booksError || versesError || null)
+  }, [booksError, versesError])
+
+  // Generate SOAP content
+  const generateSOAP = async () => {
     if (!selectedBook || !selectedChapter || !fromVerse || !toVerse) return
 
     setIsGenerating(true)
+    setError(null)
 
-    // Simulate API call with timeout
-    setTimeout(() => {
+    try {
+      // Get the book name for display
+      const selectedBookObj = bibleBooks.find(book => book.id === selectedBook)
+      const bookName = selectedBookObj ? selectedBookObj.name : selectedBook
+      const fromVerseNum = parseInt(fromVerse)
+      const toVerseNum = parseInt(toVerse)
+
+      // Get the actual Bible text using our hook's getVerseRange method
+      const scriptureText = getVerseRange(fromVerseNum, toVerseNum)
+      
+      // Format the scripture with book name, chapter, and verse range
+      const formattedScripture = `"${scriptureText}" - ${bookName} ${selectedChapter}:${fromVerse}${
+        fromVerse !== toVerse ? `-${toVerse}` : ""
+      } (WEB)`
+
+      // In a real implementation, you would call your AI service here
+      // For now, we'll simulate it with sample SOAP content
+      
       // Mock SOAP analysis result - in a real app, this would come from an LLM API
       setSoapResult({
-        scripture: `"For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life. For God did not send his Son into the world to condemn the world, but to save the world through him." - John 3:16-17`,
-
-        observation: `This passage contains one of the most well-known verses in the Bible, John 3:16, along with the important context of verse 17. Several key observations can be made:\n\n1. God's motivation is love - "God so loved the world"\n2. God's action was giving - "he gave his one and only Son"\n3. The scope is universal - "whoever believes in him"\n4. The contrast is stark - "not perish but have eternal life"\n5. Verse 17 clarifies God's purpose - not condemnation but salvation\n6. The means of salvation is through Jesus - "through him"`,
-
-        application: `This passage challenges me to reflect on how I view God's character and how I respond to His love. Some applications include:\n\n1. I should remember that God's fundamental posture toward humanity (and me) is love, not condemnation\n2. Since God gave sacrificially, I should be willing to give sacrificially to others\n3. I need to ensure my belief in Jesus is active and transformative, not merely intellectual\n4. When sharing my faith, I should emphasize God's love and desire to save, not just judgment\n5. I can find security in knowing that God's purpose is to save me through Jesus, not to condemn me`,
-
-        prayer: `Heavenly Father, thank You for Your incredible love that motivated You to give Your Son for me. I am humbled and grateful that You desire salvation, not condemnation. Help me to truly believe in Jesus in a way that transforms my life. Give me the courage to share Your love with others, emphasizing Your desire to save rather than condemn. May I reflect Your sacrificial love in how I treat others today. In Jesus' name, Amen.`,
+        scripture: formattedScripture,
+        observation: `This passage from ${bookName} contains several key observations:\n\n1. [First observation about the text]\n2. [Second observation about context and meaning]\n3. [Third observation about key words or phrases]\n4. [Fourth observation about literary structure]\n5. [Fifth observation about historical or cultural context]\n\nThese observations help us understand the author's intent and the passage's significance within the broader biblical narrative.`,
+        application: `Reflecting on this passage from ${bookName}, I can apply these truths in several ways:\n\n1. [First application point relevant to daily life]\n2. [Second application addressing character development]\n3. [Third application regarding relationships]\n4. [Fourth application about spiritual disciplines]\n5. [Fifth application connecting to current circumstances]\n\nThese applications bridge the ancient text to my contemporary context, making God's Word relevant and transformative for my life today.`,
+        prayer: `Heavenly Father,\n\nThank You for Your Word from ${bookName} that teaches me about [key theme from the passage]. I am grateful for how You [reference to God's character or action from the text].\n\nHelp me to [application point from the passage]. Give me the wisdom and strength to [another application point]. May Your Holy Spirit enable me to [spiritual growth related to the passage].\n\nI pray that through this Scripture, You would continue to transform my life and draw me closer to You.\n\nIn Jesus' name, Amen.`,
       })
+    } catch (err: any) {
+      console.error("Error generating SOAP:", err)
+      setError(`Failed to generate SOAP: ${err.message}`)
+    } finally {
       setIsGenerating(false)
-    }, 2000)
+    }
   }
 
   const copyToClipboard = (text: string, section: string) => {
@@ -112,10 +163,17 @@ export default function SOAPerPage() {
               Generate Scripture, Observation, Application, and Prayer (SOAP) analysis for your Bible study.
             </p>
           </div>
-<UnderDevelopment/>
-          {/* <div className="grid md:grid-cols-3 gap-8">
+
+          {error && (
+            <div className="mb-6 bg-red-900/30 border border-red-700 text-red-200 rounded-lg p-4 flex items-start">
+              <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+              <p>{error}</p>
+            </div>
+          )}
+
+          <div className="grid md:grid-cols-3 gap-8 ">
             <div className="md:col-span-1">
-              <Card className="bg-[#1a1a1a] border-gray-800 sticky top-4">
+              <Card className="bg-[#1a1a1a] rounded-xl border-gray-800 sticky top-4">
                 <CardContent className="pt-6">
                   <h2 className="text-xl font-bold mb-4">Select Passage</h2>
 
@@ -131,11 +189,12 @@ export default function SOAPerPage() {
                           setToVerse("")
                           setSoapResult(null)
                         }}
+                        disabled={loading.books || bibleBooks.length === 0}
                       >
-                        <SelectTrigger className="bg-[#252525] border-gray-700">
-                          <SelectValue placeholder="Select a book" />
+                        <SelectTrigger className="bg-[#252525] rounded-xl border-gray-700">
+                          <SelectValue placeholder={loading.books ? "Loading books..." : "Select a book"} />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#252525] border-gray-700">
+                        <SelectContent className="bg-[#252525] rounded-xl border-gray-700 max-h-[300px]">
                           {bibleBooks.map((book) => (
                             <SelectItem key={book.id} value={book.id}>
                               {book.name}
@@ -155,13 +214,13 @@ export default function SOAPerPage() {
                           setToVerse("")
                           setSoapResult(null)
                         }}
-                        disabled={!selectedBook}
+                        disabled={!selectedBook || loading.chapters || chapters.length === 0}
                       >
-                        <SelectTrigger className="bg-[#252525] border-gray-700">
-                          <SelectValue placeholder="Select a chapter" />
+                        <SelectTrigger className="bg-[#252525] rounded-xl border-gray-700">
+                          <SelectValue placeholder={loading.chapters ? "Loading chapters..." : "Select a chapter"} />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#252525] border-gray-700">
-                          {getChapters().map((chapter) => (
+                        <SelectContent className="bg-[#252525] rounded-xl border-gray-700">
+                          {chapters.map((chapter) => (
                             <SelectItem key={chapter} value={chapter.toString()}>
                               {chapter}
                             </SelectItem>
@@ -182,15 +241,15 @@ export default function SOAPerPage() {
                             }
                             setSoapResult(null)
                           }}
-                          disabled={!selectedChapter}
+                          disabled={!selectedChapter || loading.verses || verses.length === 0}
                         >
-                          <SelectTrigger className="bg-[#252525] border-gray-700">
-                            <SelectValue placeholder="From" />
+                          <SelectTrigger className="bg-[#252525] rounded-xl border-gray-700">
+                            <SelectValue placeholder={loading.verses ? "Loading..." : "From"} />
                           </SelectTrigger>
-                          <SelectContent className="bg-[#252525] border-gray-700">
-                            {getVerses().map((verse) => (
-                              <SelectItem key={verse} value={verse.toString()}>
-                                {verse}
+                          <SelectContent className="bg-[#252525] rounded-xl border-gray-700">
+                            {verses.map((verse) => (
+                              <SelectItem key={verse.number} value={verse.number.toString()}>
+                                {verse.number}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -205,17 +264,17 @@ export default function SOAPerPage() {
                             setToVerse(value)
                             setSoapResult(null)
                           }}
-                          disabled={!fromVerse}
+                          disabled={!fromVerse || loading.verses}
                         >
-                          <SelectTrigger className="bg-[#252525] border-gray-700">
-                            <SelectValue placeholder="To" />
+                          <SelectTrigger className="bg-[#252525] rounded-xl border-gray-700">
+                            <SelectValue placeholder={loading.verses ? "Loading..." : "To"} />
                           </SelectTrigger>
-                          <SelectContent className="bg-[#252525] border-gray-700">
-                            {getVerses()
-                              .filter((verse) => !fromVerse || verse >= Number.parseInt(fromVerse))
+                          <SelectContent className="bg-[#252525] rounded-xl border-gray-700">
+                            {verses
+                              .filter((verse) => !fromVerse || verse.number >= Number.parseInt(fromVerse))
                               .map((verse) => (
-                                <SelectItem key={verse} value={verse.toString()}>
-                                  {verse}
+                                <SelectItem key={verse.number} value={verse.number.toString()}>
+                                  {verse.number}
                                 </SelectItem>
                               ))}
                           </SelectContent>
@@ -226,7 +285,7 @@ export default function SOAPerPage() {
                     <Button
                       onClick={generateSOAP}
                       disabled={!selectedBook || !selectedChapter || !fromVerse || !toVerse || isGenerating}
-                      className="w-full bg-[#d63736] hover:bg-[#c52c2c] text-white"
+                      className="w-full bg-[#d63736] hover:bg-[#c52c2c] rounded-xl text-white"
                     >
                       {isGenerating ? (
                         <>
@@ -465,7 +524,7 @@ export default function SOAPerPage() {
                 </div>
               )}
             </div>
-          </div> */}
+          </div>
 
           <div className="mt-12 bg-[#1a1a1a] border border-gray-800 rounded-xl p-6">
             <h2 className="text-xl font-bold mb-4">About SOAPer</h2>
