@@ -32,6 +32,7 @@ import { useBibleBooks } from "@/hooks/useBibleBooks"
 import { useBibleChapter } from "@/hooks/useBibleChapter"
 import { useSoapGenerator } from "@/hooks/useSoapGenerator"
 import { SoapResult, LoadingStates, ApiError } from "@/types/soaper"
+import ReactMarkdown from "react-markdown"
 
 // Bible API version (hardcoded as requested)
 const BIBLE_VERSION = "ENGWEBP"
@@ -179,7 +180,7 @@ export default function SOAPerPage() {
   const copyFullSOAP = () => {
     if (!soapResult) return
 
-    const fullText = `SCRIPTURE:\n${soapResult.scripture}\n\n${ getVerseRange(parseInt(fromVerse), parseInt(toVerse))}\n\nOBSERVATION:\n${soapResult.observation}\n\nAPPLICATION:\n${soapResult.application}\n\nPRAYER:\n${soapResult.prayer}`
+    const fullText = `SCRIPTURE:\n${soapResult.scripture}\n${ getVerseRange(parseInt(fromVerse), parseInt(toVerse))}\n\nOBSERVATION:\n${soapResult.observation}\n\nAPPLICATION:\n${soapResult.application}\n\nPRAYER:\n${soapResult.prayer}`
 
     navigator.clipboard.writeText(fullText)
     setCopied("full")
@@ -477,7 +478,9 @@ export default function SOAPerPage() {
                               )}
                             </Button>
                           </div>
-                          <div className="text-gray-300 markdown-content" dangerouslySetInnerHTML={{ __html: soapResult.observation }}></div>
+                          <ReactMarkdown >
+                            {soapResult.observation}
+                          </ReactMarkdown>
                         </div>
                         <p className="text-sm text-gray-400">
                           The Observation section examines what the text actually says, identifying key words, themes,
@@ -505,7 +508,9 @@ export default function SOAPerPage() {
                               )}
                             </Button>
                           </div>
-                          <div className="text-gray-300 markdown-content" dangerouslySetInnerHTML={{ __html: soapResult.application }}></div>
+                          <ReactMarkdown >
+                            {soapResult.application}
+                          </ReactMarkdown>
                         </div>
                         <p className="text-sm text-gray-400">
                           The Application section explores how to apply the passage to your life, making it practical
@@ -533,7 +538,9 @@ export default function SOAPerPage() {
                               )}
                             </Button>
                           </div>
-                          <div className="text-gray-300 markdown-content" dangerouslySetInnerHTML={{ __html: soapResult.prayer }}></div>
+                          <ReactMarkdown >
+                            {soapResult.prayer}
+                          </ReactMarkdown>
                         </div>
                         <p className="text-sm text-gray-400">
                           The Prayer section responds to the passage with a prayer that applies the insights gained from

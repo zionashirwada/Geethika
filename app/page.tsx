@@ -143,46 +143,11 @@ export default function HomePage() {
           <span className="text-[#d63736]">AI-Powered</span> Ministry Tools
         </h2>
 
-        <div className="grid md:grid-cols-4 gap-8">
-          {/* WWJD Tool */}
-          <div className="bg-[#1a1a1a] p-6 rounded-lg border border-gray-800 hover:border-[#d63736] transition-colors">
-            <div className="w-12 h-12 bg-[#d63736]/20 rounded-full flex items-center justify-center mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-[#d63736]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold mb-2">WWJD</h3>
-            <p className="text-gray-400 mb-4">
-              Get Bible verse-based guidance on what Jesus would do in your specific situation. AI-powered spiritual
-              advice rooted in scripture.
-            </p>
-            <Link href="/ai-tools/wwjd" className="text-[#d63736] hover:underline inline-flex items-center">
-              Ask for Guidance
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 ml-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center ">
+          
 
-          {/* Sunday School Studio */}
-          <div className="bg-[#1a1a1a] p-6 rounded-lg border border-gray-800 hover:border-[#d63736] transition-colors">
+          {/* Sunda</div>y School Studio */}
+          <div className="bg-[#1a1a1a] p-6 rounded-xl border border-gray-800 hover:border-[#d63736] transition-colors ">
             <div className="w-12 h-12 bg-[#d63736]/20 rounded-full flex items-center justify-center mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -205,7 +170,7 @@ export default function HomePage() {
               aids for children's ministry.
             </p>
             <Link
-              href="/ai-tools/sunday-school-studio"
+              href="/ai/sunday-school-studio"
               className="text-[#d63736] hover:underline inline-flex items-center"
             >
               Create Images
@@ -221,45 +186,10 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Theology Guard */}
-          <div className="bg-[#1a1a1a] p-6 rounded-lg border border-gray-800 hover:border-[#d63736] transition-colors">
-            <div className="w-12 h-12 bg-[#d63736]/20 rounded-full flex items-center justify-center mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-[#d63736]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold mb-2">Theology Guard</h3>
-            <p className="text-gray-400 mb-4">
-              Fact-check teachings against denominational doctrines. Detect heresy, analyze denominational alignment,
-              and get suggested corrections.
-            </p>
-            <Link href="/ai-tools/theology-guard" className="text-[#d63736] hover:underline inline-flex items-center">
-              Validate Teachings
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 ml-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
+        
 
           {/* SOAPer Tool */}
-          <div className="bg-[#1a1a1a] p-6 rounded-lg border border-gray-800 hover:border-[#d63736] transition-colors">
+          <div className="bg-[#1a1a1a] p-6 rounded-xl border border-gray-800 hover:border-[#d63736] transition-colors">
             <div className="w-12 h-12 bg-[#d63736]/20 rounded-full flex items-center justify-center mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -281,7 +211,7 @@ export default function HomePage() {
               Generate Scripture, Observation, Application, and Prayer (SOAP) analysis for any Bible passage to enhance
               your personal study.
             </p>
-            <Link href="/ai-tools/soaper" className="text-[#d63736] hover:underline inline-flex items-center">
+            <Link href="/ai/soaper" className="text-[#d63736] hover:underline inline-flex items-center">
               Study Scripture
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -78,18 +78,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <Boxes size={20} />
         {isOpen && <span>SOAPer</span>}
       </a>
-      <a href="/ai/wwjd" className={`sidebar-link transition-all duration-300 ${pathname === '/ai/wwjd' ? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
-        <Sparkle size={20} />
-        {isOpen && <span>WWJD</span>}
-      </a>
+    
       <a href="/ai/kids" className={`sidebar-link transition-all duration-300 ${pathname === '/ai/kids' ? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
         <Brush size={20} />
         {isOpen && <span>Kids Studio</span>}
       </a>
-      <a href="/ai/theology" className={`sidebar-link transition-all duration-300 ${pathname === '/ai/theology' ? 'active' : ''}`} title={!isOpen ? "Privacy" : ""}>
-        <Lightbulb size={20} />
-        {isOpen && <span>Theology Guard</span>}
-      </a>
+     
       
 
       <div className={`section-title ${!isOpen && 'hidden'} transition-all duration-300`}>Other</div>
