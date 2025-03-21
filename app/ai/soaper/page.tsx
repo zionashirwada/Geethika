@@ -7,6 +7,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import {
   ArrowLeft,
   BookOpen,
   Eye,
@@ -21,7 +30,8 @@ import {
 import BackButton from "@/components/BackButton"
 import { useBibleBooks } from "@/hooks/useBibleBooks"
 import { useBibleChapter } from "@/hooks/useBibleChapter"
-import { SoapResult, LoadingStates } from "@/types/soaper"
+import { useSoapGenerator } from "@/hooks/useSoapGenerator"
+import { SoapResult, LoadingStates, ApiError } from "@/types/soaper"
 
 // Bible API version (hardcoded as requested)
 const BIBLE_VERSION = "ENGWEBP"
@@ -36,6 +46,8 @@ export default function SOAPerPage() {
   // State for loading and errors
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [apiError, setApiError] = useState<ApiError | null>(null)
+  const [showErrorDialog, setShowErrorDialog] = useState(false)
   const [loading, setLoading] = useState<LoadingStates>({
     books: false,
     chapters: false,
@@ -81,6 +93,14 @@ export default function SOAPerPage() {
     selectedChapter ? parseInt(selectedChapter) : null
   )
 
+  // Use our SOAP generator hook
+  const {
+    generateSoap,
+    isLoading: soapLoading,
+    error: soapError,
+    result: generatedSoap
+  } = useSoapGenerator()
+
   // Update loading state based on hook loading states
   useEffect(() => {
     setLoading({
@@ -95,12 +115,20 @@ export default function SOAPerPage() {
     setError(booksError || versesError || null)
   }, [booksError, versesError])
 
+  // Update SOAP result when generated
+  useEffect(() => {
+    if (generatedSoap) {
+      setSoapResult(generatedSoap)
+    }
+  }, [generatedSoap])
+
   // Generate SOAP content
   const generateSOAP = async () => {
     if (!selectedBook || !selectedChapter || !fromVerse || !toVerse) return
 
     setIsGenerating(true)
     setError(null)
+    setApiError(null)
 
     try {
       // Get the book name for display
@@ -111,25 +139,32 @@ export default function SOAPerPage() {
 
       // Get the actual Bible text using our hook's getVerseRange method
       const scriptureText = getVerseRange(fromVerseNum, toVerseNum)
+   
       
-      // Format the scripture with book name, chapter, and verse range
-      const formattedScripture = `"${scriptureText}" - ${bookName} ${selectedChapter}:${fromVerse}${
+      // Format the scripture reference
+      const scriptureRef = `${bookName} ${selectedChapter}:${fromVerse}${
         fromVerse !== toVerse ? `-${toVerse}` : ""
       } (WEB)`
-
-      // In a real implementation, you would call your AI service here
-      // For now, we'll simulate it with sample SOAP content
       
-      // Mock SOAP analysis result - in a real app, this would come from an LLM API
-      setSoapResult({
-        scripture: formattedScripture,
-        observation: `This passage from ${bookName} contains several key observations:\n\n1. [First observation about the text]\n2. [Second observation about context and meaning]\n3. [Third observation about key words or phrases]\n4. [Fourth observation about literary structure]\n5. [Fifth observation about historical or cultural context]\n\nThese observations help us understand the author's intent and the passage's significance within the broader biblical narrative.`,
-        application: `Reflecting on this passage from ${bookName}, I can apply these truths in several ways:\n\n1. [First application point relevant to daily life]\n2. [Second application addressing character development]\n3. [Third application regarding relationships]\n4. [Fourth application about spiritual disciplines]\n5. [Fifth application connecting to current circumstances]\n\nThese applications bridge the ancient text to my contemporary context, making God's Word relevant and transformative for my life today.`,
-        prayer: `Heavenly Father,\n\nThank You for Your Word from ${bookName} that teaches me about [key theme from the passage]. I am grateful for how You [reference to God's character or action from the text].\n\nHelp me to [application point from the passage]. Give me the wisdom and strength to [another application point]. May Your Holy Spirit enable me to [spiritual growth related to the passage].\n\nI pray that through this Scripture, You would continue to transform my life and draw me closer to You.\n\nIn Jesus' name, Amen.`,
-      })
+      // Call our API through the hook
+      const result = await generateSoap(scriptureText, scriptureRef)
+      
+      // Set the result in state
+      setSoapResult(result)
+      setActiveTab("scripture")
     } catch (err: any) {
       console.error("Error generating SOAP:", err)
-      setError(`Failed to generate SOAP: ${err.message}`)
+      
+      // Handle API errors
+      if (err.message && typeof err.message === 'string') {
+        setApiError({
+          message: err.message,
+          details: err.details || 'Please try again or select a different passage'
+        })
+        setShowErrorDialog(true)
+      } else {
+        setError(`Failed to generate SOAP: ${err.message || 'Unknown error'}`)
+      }
     } finally {
       setIsGenerating(false)
     }
@@ -144,7 +179,7 @@ export default function SOAPerPage() {
   const copyFullSOAP = () => {
     if (!soapResult) return
 
-    const fullText = `SCRIPTURE:\n${soapResult.scripture}\n\nOBSERVATION:\n${soapResult.observation}\n\nAPPLICATION:\n${soapResult.application}\n\nPRAYER:\n${soapResult.prayer}`
+    const fullText = `SCRIPTURE:\n${soapResult.scripture}\n\n${ getVerseRange(parseInt(fromVerse), parseInt(toVerse))}\n\nOBSERVATION:\n${soapResult.observation}\n\nAPPLICATION:\n${soapResult.application}\n\nPRAYER:\n${soapResult.prayer}`
 
     navigator.clipboard.writeText(fullText)
     setCopied("full")
@@ -171,9 +206,29 @@ export default function SOAPerPage() {
             </div>
           )}
 
+          {/* Error Dialog */}
+          <AlertDialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+            <AlertDialogContent className="bg-[#1a1a1a] border-gray-800">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-white">Error Generating SOAP</AlertDialogTitle>
+                <AlertDialogDescription className="text-gray-300">
+                  {apiError?.message}
+                  {apiError?.details && (
+                    <p className="mt-2 text-gray-400">{apiError.details}</p>
+                  )}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogAction className="bg-[#d63736] hover:bg-[#c52c2c]">
+                  Try Again
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
           <div className="grid md:grid-cols-3 gap-8 ">
             <div className="md:col-span-1">
-              <Card className="bg-[#1a1a1a] rounded-xl border-gray-800 sticky top-4">
+              <Card className="bg-[#1a1a1a] rounded-xl border-gray-800 sticky top-4 text-white">
                 <CardContent className="pt-6">
                   <h2 className="text-xl font-bold mb-4">Select Passage</h2>
 
@@ -284,10 +339,10 @@ export default function SOAPerPage() {
 
                     <Button
                       onClick={generateSOAP}
-                      disabled={!selectedBook || !selectedChapter || !fromVerse || !toVerse || isGenerating}
+                      disabled={!selectedBook || !selectedChapter || !fromVerse || !toVerse || isGenerating || soapLoading}
                       className="w-full bg-[#d63736] hover:bg-[#c52c2c] rounded-xl text-white"
                     >
-                      {isGenerating ? (
+                      {isGenerating || soapLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Generating...
@@ -339,7 +394,7 @@ export default function SOAPerPage() {
 
             <div className="md:col-span-2">
               {soapResult ? (
-                <Card className="bg-[#1a1a1a] border-gray-800">
+                <Card className="bg-[#1a1a1a] border-gray-800 rounded-xl">
                   <CardContent className="pt-6">
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                       <TabsList className="w-full bg-[#252525]">
@@ -362,30 +417,43 @@ export default function SOAPerPage() {
                       </TabsList>
 
                       <TabsContent value="scripture" className="mt-4">
-                        <div className="bg-[#252525] p-4 rounded-md mb-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <h3 className="text-lg font-bold flex items-center">
-                              <BookOpen className="h-5 w-5 mr-2 text-[#d63736]" />
-                              Scripture
-                            </h3>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 px-2"
-                              onClick={() => copyToClipboard(soapResult.scripture, "scripture")}
-                            >
-                              {copied === "scripture" ? (
-                                <CheckCircle className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <Copy className="h-4 w-4" />
-                              )}
-                            </Button>
+                        <div className="space-y-4">
+                          {/* Direct Bible Text Section */}
+                          <div className="bg-[#252525] p-4 rounded-md">
+                            <div className="flex justify-between items-start mb-2">
+                              <h3 className="text-lg font-bold flex items-center text-white">
+                                <BookOpen className="h-5 w-5 mr-2 text-[#d63736]" />
+                                Bible Text
+                              </h3>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 px-2"
+                                onClick={() => copyToClipboard(getVerseRange(parseInt(fromVerse), parseInt(toVerse)), "direct-scripture")}
+                              >
+                                {copied === "direct-scripture" ? (
+                                  <CheckCircle className="h-4 w-4 text-green-500" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </div>
+                            <div className="space-y-4">
+                              <p className="text-[#d63736] font-medium">
+                                {bibleBooks.find((b) => b.id === selectedBook)?.name} {selectedChapter}:
+                                {fromVerse}
+                                {fromVerse !== toVerse ? `-${toVerse}` : ""} (WEB)
+                              </p>
+                              <p className="text-white whitespace-pre-line">
+                                {getVerseRange(parseInt(fromVerse), parseInt(toVerse))}
+                              </p>
+                            </div>
                           </div>
-                          <p className="text-gray-300 whitespace-pre-line">{soapResult.scripture}</p>
+
+
                         </div>
-                        <p className="text-sm text-gray-400">
-                          The Scripture section contains the Bible passage you selected, which forms the foundation of
-                          your SOAP study.
+                        <p className="text-sm text-gray-400 mt-2">
+                          The Scripture section shows both the direct Bible text and the AI-processed version used for SOAP analysis.
                         </p>
                       </TabsContent>
 
@@ -409,7 +477,7 @@ export default function SOAPerPage() {
                               )}
                             </Button>
                           </div>
-                          <p className="text-gray-300 whitespace-pre-line">{soapResult.observation}</p>
+                          <div className="text-gray-300 markdown-content" dangerouslySetInnerHTML={{ __html: soapResult.observation }}></div>
                         </div>
                         <p className="text-sm text-gray-400">
                           The Observation section examines what the text actually says, identifying key words, themes,
@@ -437,7 +505,7 @@ export default function SOAPerPage() {
                               )}
                             </Button>
                           </div>
-                          <p className="text-gray-300 whitespace-pre-line">{soapResult.application}</p>
+                          <div className="text-gray-300 markdown-content" dangerouslySetInnerHTML={{ __html: soapResult.application }}></div>
                         </div>
                         <p className="text-sm text-gray-400">
                           The Application section explores how to apply the passage to your life, making it practical
@@ -465,7 +533,7 @@ export default function SOAPerPage() {
                               )}
                             </Button>
                           </div>
-                          <p className="text-gray-300 whitespace-pre-line">{soapResult.prayer}</p>
+                          <div className="text-gray-300 markdown-content" dangerouslySetInnerHTML={{ __html: soapResult.prayer }}></div>
                         </div>
                         <p className="text-sm text-gray-400">
                           The Prayer section responds to the passage with a prayer that applies the insights gained from
@@ -476,6 +544,7 @@ export default function SOAPerPage() {
                   </CardContent>
                 </Card>
               ) : (
+                // ... the rest of the component remains the same
                 <div className="h-full flex items-center justify-center">
                   <div className="text-center p-8 bg-[#1a1a1a] border border-gray-800 rounded-xl">
                     <div className="w-16 h-16 bg-[#d63736]/20 rounded-full flex items-center justify-center mx-auto mb-4">

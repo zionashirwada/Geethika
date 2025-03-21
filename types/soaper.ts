@@ -46,3 +46,66 @@ export interface VerseSelection {
     fromVerse: number;
     toVerse: number;
 }
+
+/**
+ * API request for the SOAP generation
+ */
+export interface SoapApiRequest {
+    /**
+     * Bible passage text
+     */
+    scripture: string;
+    
+    /**
+     * The pre-prompt for the LLM
+     */
+    prePrompt: string;
+}
+
+/**
+ * API response from the Groq LLM 
+ */
+export interface GroqApiResponse {
+    /**
+     * Generated text from the model
+     */
+    text: string;
+    
+    /**
+     * Model used for generation
+     */
+    model: string;
+    
+    /**
+     * Completion tokens used
+     */
+    completionTokens?: number;
+    
+    /**
+     * Prompt tokens used
+     */
+    promptTokens?: number;
+    
+    /**
+     * Total tokens used
+     */
+    totalTokens?: number;
+}
+
+/**
+ * Error response from the API
+ */
+export interface ApiError {
+    message: string;
+    status?: number;
+    details?: string;
+}
+
+/**
+ * Parsed SOAP sections to validate response format
+ */
+export interface ParsedSoapSections {
+    observation: string | null;
+    application: string | null;
+    prayer: string | null;
+}

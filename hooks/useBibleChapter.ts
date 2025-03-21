@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TranslationBookChapter, ChapterVerse, ChapterContent } from "@/types/bible";
+import { TranslationBookChapter, ChapterVerse, ChapterContent } from "@/types/bibleApi";
 
 /**
  * Custom hook to fetch a Bible chapter and extract its verses

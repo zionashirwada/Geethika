@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TranslationBooks, TranslationBook } from "@/types/bible";
+import { TranslationBooks, TranslationBook } from "@/types/bibleApi";
 
 /**
  * Custom hook to fetch Bible books for a specific translation
