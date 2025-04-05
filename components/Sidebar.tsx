@@ -15,6 +15,8 @@ import {
   Sparkle,
   Lightbulb,
   Brush,
+  Sliders,
+  Presentation,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -70,6 +72,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <a href="/translate" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/translate') ? 'active' : ''}`} title={!isOpen ? "Translate" : ""}>
           <Languages size={20} />
           {isOpen && <span>Convert Font</span>}  
+        </a>
+        <a href="/slide" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/slide') ? 'active' : ''}`} title={!isOpen ? "Slide" : ""}>
+          <Presentation size={20} />
+          {isOpen && <span>Slide Creator</span>}  
         </a>
       </div>
 
