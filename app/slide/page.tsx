@@ -28,6 +28,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { PlusCircle, GripVertical, Trash2, Copy, Check } from "lucide-react"
+import { bibleVersions } from "@/data/bibleVersions"
+import { Bible, Book as BibleBook, Verse } from "@/types/bible"
 
 // Slide types
 type SlideType = "title" | "bibleVerse" | "customVerse" | "numberedList" | "bulletList"
@@ -56,77 +58,6 @@ interface Slide {
   items?: string[]
 }
 
-// Bible data
-const bibleVersions = ["KJV", "NIV", "ESV", "NKJV", "NLT"]
-const bibleBooks = [
-  "Genesis",
-  "Exodus",
-  "Leviticus",
-  "Numbers",
-  "Deuteronomy",
-  "Joshua",
-  "Judges",
-  "Ruth",
-  "1 Samuel",
-  "2 Samuel",
-  "1 Kings",
-  "2 Kings",
-  "1 Chronicles",
-  "2 Chronicles",
-  "Ezra",
-  "Nehemiah",
-  "Esther",
-  "Job",
-  "Psalms",
-  "Proverbs",
-  "Ecclesiastes",
-  "Song of Solomon",
-  "Isaiah",
-  "Jeremiah",
-  "Lamentations",
-  "Ezekiel",
-  "Daniel",
-  "Hosea",
-  "Joel",
-  "Amos",
-  "Obadiah",
-  "Jonah",
-  "Micah",
-  "Nahum",
-  "Habakkuk",
-  "Zephaniah",
-  "Haggai",
-  "Zechariah",
-  "Malachi",
-  "Matthew",
-  "Mark",
-  "Luke",
-  "John",
-  "Acts",
-  "Romans",
-  "1 Corinthians",
-  "2 Corinthians",
-  "Galatians",
-  "Ephesians",
-  "Philippians",
-  "Colossians",
-  "1 Thessalonians",
-  "2 Thessalonians",
-  "1 Timothy",
-  "2 Timothy",
-  "Titus",
-  "Philemon",
-  "Hebrews",
-  "James",
-  "1 Peter",
-  "2 Peter",
-  "1 John",
-  "2 John",
-  "3 John",
-  "Jude",
-  "Revelation",
-]
-
 export default function SlideCreator() {
   // State for slides
   const [slides, setSlides] = useState<Slide[]>([])
@@ -136,8 +67,8 @@ export default function SlideCreator() {
 
   // State for form inputs
   const [titleInput, setTitleInput] = useState("")
-  const [bibleVersion, setBibleVersion] = useState("KJV")
-  const [bibleBook, setBibleBook] = useState("Genesis")
+  const [bibleVersion, setBibleVersion] = useState(bibleVersions[0].id)
+  const [bibleBook, setBibleBook] = useState("")
   const [bibleChapter, setBibleChapter] = useState("1")
   const [fromVerse, setFromVerse] = useState("1")
   const [toVerse, setToVerse] = useState("1")
@@ -146,48 +77,109 @@ export default function SlideCreator() {
   const [listItems, setListItems] = useState("")
   const [activeTab, setActiveTab] = useState("numberedList")
 
+  // State for Bible data
+  const [bibleData, setBibleData] = useState<Bible | null>(null)
+  const [books, setBooks] = useState<BibleBook[]>([])
+  const [loadingBible, setLoadingBible] = useState(false)
+  const [chapters, setChapters] = useState<number[]>([])
+  const [verses, setVerses] = useState<Verse[]>([])
+  const [maxVerses, setMaxVerses] = useState<number>(1)
+
   // Refs for textareas
   const numberedListRef = useRef<HTMLTextAreaElement>(null)
   const bulletListRef = useRef<HTMLTextAreaElement>(null)
 
-  // Generate chapters array based on book (simplified for demo)
-  const generateChapters = () => {
-    return Array.from({ length: 50 }, (_, i) => (i + 1).toString())
-  }
+  // Load Bible data when version changes
+  useEffect(() => {
+    const fetchBibleData = async () => {
+      setLoadingBible(true)
+      try {
+        const selectedVersion = bibleVersions.find(v => v.id === bibleVersion)
+        if (!selectedVersion) return
+        
+        // Replace '@data' with '/data' so the file is fetched from the public folder
+        const location = selectedVersion.location.replace("@data", "/data")
+        const response = await fetch(location)
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch Bible data: ${response.status} ${response.statusText}`)
+        }
 
-  // Generate verses array based on chapter (simplified for demo)
-  const generateVerses = () => {
-    return Array.from({ length: 30 }, (_, i) => (i + 1).toString())
-  }
-
-  // Fetch Bible verses from API
-  const fetchBibleVerses = async (
-    version: string,
-    book: string,
-    chapter: string,
-    fromVerse: string,
-    toVerse: string,
-  ): Promise<BibleVerseData> => {
-    try {
-      // In a real implementation, you would fetch from your Bible API
-      // For now, we'll return mock data
-      const verses = Array.from({ length: Number.parseInt(toVerse) - Number.parseInt(fromVerse) + 1 }, (_, i) => ({
-        verse: (Number.parseInt(fromVerse) + i).toString(),
-        text: `This is verse ${Number.parseInt(fromVerse) + i} of ${book} ${chapter} in ${version}.`,
-      }))
-
-      return {
-        reference: `${book} ${chapter}:${fromVerse}${fromVerse !== toVerse ? `-${toVerse}` : ""}`,
-        verses,
-      }
-    } catch (error) {
-      console.error("Error fetching Bible verses:", error)
-      return {
-        reference: `${book} ${chapter}:${fromVerse}${fromVerse !== toVerse ? `-${toVerse}` : ""}`,
-        verses: [],
+        const data: Bible = await response.json()
+        setBibleData(data)
+        setBooks(data.books)
+        
+        // Set default book if not already set
+        if (!bibleBook && data.books.length > 0) {
+          setBibleBook(data.books[0].id)
+        }
+        
+      } catch (error) {
+        console.error("Error loading Bible data:", error)
+      } finally {
+        setLoadingBible(false)
       }
     }
-  }
+
+    fetchBibleData()
+  }, [bibleVersion])
+
+  // Update chapters when book changes
+  useEffect(() => {
+    if (!books.length || !bibleBook) return
+    
+    const selectedBook = books.find(book => book.id === bibleBook)
+    if (!selectedBook) return
+
+    // Find all chapters in the selected book
+    if (selectedBook.verses && selectedBook.verses[0]?.Chapter) {
+      const uniqueChapters = Array.from(
+        new Set(selectedBook.verses.map(verse => verse.Chapter))
+      ).filter(Boolean) as number[]
+      
+      setChapters(uniqueChapters.sort((a, b) => a - b))
+      
+      // Reset chapter selection to first chapter
+      if (uniqueChapters.length > 0) {
+        setBibleChapter(uniqueChapters[0].toString())
+      }
+    } else if (selectedBook.verses && selectedBook.verses.length > 0) {
+      // If there's no Chapter property, assume it's chapter 1
+      setChapters([1])
+      setBibleChapter("1")
+    } else {
+      setChapters([])
+    }
+  }, [bibleBook, books])
+
+  // Update available verses when chapter changes
+  useEffect(() => {
+    if (!books.length || !bibleBook || !bibleChapter) return
+    
+    const selectedBook = books.find(book => book.id === bibleBook)
+    if (!selectedBook) return
+
+    // Get verses for the selected chapter
+    const chapterVerses = selectedBook.verses.filter(
+      verse => verse.Chapter === parseInt(bibleChapter)
+    )
+    
+    setVerses(chapterVerses)
+    
+    // Find max verse number
+    if (chapterVerses.length > 0) {
+      const maxVerse = Math.max(...chapterVerses.map(verse => verse.Verse))
+      setMaxVerses(maxVerse)
+      
+      // Reset verse selection
+      setFromVerse("1")
+      setToVerse(Math.min(5, maxVerse).toString())
+    } else {
+      setMaxVerses(1)
+      setFromVerse("1")
+      setToVerse("1")
+    }
+  }, [bibleBook, bibleChapter, books])
 
   // Add a title slide
   const addTitleSlide = () => {
@@ -206,19 +198,32 @@ export default function SlideCreator() {
 
   // Add Bible verse slides
   const addBibleVerseSlides = async () => {
-    const bibleData = await fetchBibleVerses(bibleVersion, bibleBook, bibleChapter, fromVerse, toVerse)
+    if (!bibleData || !books.length || !bibleBook || !bibleChapter) return
+    
+    const selectedBook = books.find(book => book.id === bibleBook)
+    if (!selectedBook) return
+
+    const fromVerseNum = parseInt(fromVerse)
+    const toVerseNum = parseInt(toVerse)
+    
+    // Get the selected verses from the Bible data
+    const selectedVerses = selectedBook.verses.filter(
+      verse => verse.Chapter === parseInt(bibleChapter) && 
+               verse.Verse >= fromVerseNum && 
+               verse.Verse <= toVerseNum
+    )
 
     // Create individual slides for each verse
-    const newSlides = bibleData.verses.map((verse) => ({
-      id: Date.now().toString() + verse.verse,
+    const newSlides = selectedVerses.map(verse => ({
+      id: Date.now().toString() + verse.Verse,
       type: "bibleVerse" as SlideType,
-      reference: `${bibleBook} ${bibleChapter}:${verse.verse}`,
+      reference: `${selectedBook.name} ${bibleChapter}:${verse.Verse}`,
       bibleVersion,
-      book: bibleBook,
+      book: selectedBook.name,
       chapter: bibleChapter,
-      fromVerse: verse.verse,
-      toVerse: verse.verse,
-      content: verse.text,
+      fromVerse: verse.Verse.toString(),
+      toVerse: verse.Verse.toString(),
+      content: verse.Text,
     }))
 
     setSlides([...slides, ...newSlides])
@@ -495,8 +500,8 @@ export default function SlideCreator() {
                             </SelectTrigger>
                             <SelectContent className="border-slate-600 rounded-xl bg-black">
                               {bibleVersions.map((version) => (
-                                <SelectItem key={version} value={version} >
-                                  {version}
+                                <SelectItem key={version.id} value={version.id}>
+                                  {version.title}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -504,14 +509,14 @@ export default function SlideCreator() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium mb-1">Book</label>
-                          <Select value={bibleBook} onValueChange={setBibleBook}>
+                          <Select value={bibleBook} onValueChange={setBibleBook} disabled={loadingBible || !books.length}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select book" />
+                              <SelectValue placeholder={loadingBible ? "Loading..." : "Select book"} />
                             </SelectTrigger>
                             <SelectContent className="border-slate-600 rounded-xl bg-black">
-                              {bibleBooks.map((book) => (
-                                <SelectItem key={book} value={book}>
-                                  {book}
+                              {books.map((book) => (
+                                <SelectItem key={book.id} value={book.id}>
+                                  {book.name}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -521,13 +526,13 @@ export default function SlideCreator() {
                       <div className="grid grid-cols-3 gap-4">
                         <div>
                           <label className="block text-sm font-medium mb-1">Chapter</label>
-                          <Select value={bibleChapter} onValueChange={setBibleChapter}>
+                          <Select value={bibleChapter} onValueChange={setBibleChapter} disabled={loadingBible || !chapters.length}>
                             <SelectTrigger>
                               <SelectValue placeholder="Chapter" />
                             </SelectTrigger>
                             <SelectContent className="border-slate-600 rounded-xl bg-black">
-                              {generateChapters().map((chapter) => (
-                                <SelectItem key={chapter} value={chapter}>
+                              {chapters.map((chapter) => (
+                                <SelectItem key={chapter} value={chapter.toString()}>
                                   {chapter}
                                 </SelectItem>
                               ))}
@@ -536,14 +541,18 @@ export default function SlideCreator() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium mb-1">From Verse</label>
-                          <Select value={fromVerse} onValueChange={setFromVerse}>
+                          <Select 
+                            value={fromVerse} 
+                            onValueChange={setFromVerse}
+                            disabled={loadingBible || !verses.length}
+                          >
                             <SelectTrigger>
                               <SelectValue placeholder="From" />
                             </SelectTrigger>
                             <SelectContent className="border-slate-600 rounded-xl bg-black">
-                              {generateVerses().map((verse) => (
-                                <SelectItem key={verse} value={verse}>
-                                  {verse}
+                              {Array.from({ length: maxVerses }, (_, i) => i + 1).map((verseNum) => (
+                                <SelectItem key={verseNum} value={verseNum.toString()}>
+                                  {verseNum}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -551,22 +560,32 @@ export default function SlideCreator() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium mb-1">To Verse</label>
-                          <Select value={toVerse} onValueChange={setToVerse}>
+                          <Select 
+                            value={toVerse} 
+                            onValueChange={setToVerse}
+                            disabled={loadingBible || !verses.length}
+                          >
                             <SelectTrigger>
                               <SelectValue placeholder="To" />
                             </SelectTrigger>
                             <SelectContent className="border-slate-600 rounded-xl bg-black">
-                              {generateVerses().map((verse) => (
-                                <SelectItem key={verse} value={verse}>
-                                  {verse}
-                                </SelectItem>
-                              ))}
+                              {Array.from({ length: maxVerses }, (_, i) => i + 1)
+                                .filter(num => num >= parseInt(fromVerse))
+                                .map((verseNum) => (
+                                  <SelectItem key={verseNum} value={verseNum.toString()}>
+                                    {verseNum}
+                                  </SelectItem>
+                                ))}
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
-                      <Button onClick={addBibleVerseSlides} className="bg-[#d63736] hover:bg-[#d63736]/90 rounded-xl">
-                        Add Slide
+                      <Button 
+                        onClick={addBibleVerseSlides} 
+                        className="bg-[#d63736] hover:bg-[#d63736]/90 rounded-xl"
+                        disabled={loadingBible || !verses.length}
+                      >
+                        {loadingBible ? "Loading..." : "Add Slide"}
                       </Button>
                     </div>
                   </TabsContent>
