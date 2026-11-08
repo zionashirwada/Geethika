@@ -17,6 +17,7 @@ import {
   Brush,
   Sliders,
   Presentation,
+  Scissors,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -75,7 +76,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </a>
         <a href="/slide" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/slide') ? 'active' : ''}`} title={!isOpen ? "Slide" : ""}>
           <Presentation size={20} />
-          {isOpen && <span>Slide Creator</span>}  
+          {isOpen && <span>Slide Creator</span>}
+        </a>
+        <a href="/shorts" className={`sidebar-link transition-all duration-300 ${pathname?.startsWith('/shorts') ? 'active' : ''}`} title={!isOpen ? "Short Creator" : ""}>
+          <Scissors size={20} />
+          {isOpen && <span>Short Creator</span>}
         </a>
       </div>
 
