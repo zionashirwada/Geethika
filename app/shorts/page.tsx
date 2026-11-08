@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import Image from "next/image"
 import toast from "react-hot-toast"
 import { Crosshair, Download, Loader2, Play, Scissors, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -12,8 +13,10 @@ import {
   OverlayStyle,
   SUBTITLE_STYLES,
   SubtitleStyle,
+  Word,
   fmt,
   parseTime,
+  previewMoment,
 } from "@/lib/shorts"
 
 interface VideoInfo {
@@ -28,6 +31,22 @@ interface VideoInfo {
 const MAX_CLIP_SECONDS = 300
 const YT_API = "https://www.youtube.com/iframe_api"
 
+type Look = { subtitle: SubtitleStyle; overlay: OverlayStyle; headline: string }
+
+const shortRequest = (info: VideoInfo, words: Word[], start: number, end: number, look: Look, extra = {}) => ({
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    url: info.id,
+    start,
+    end,
+    ...look,
+    channel: info.channel,
+    words: words.filter((w) => w.end > start && w.start < end),
+    ...extra,
+  }),
+})
+
 export default function ShortCreator() {
   const [url, setUrl] = useState("")
   const [info, setInfo] = useState<VideoInfo | null>(null)
@@ -40,6 +59,8 @@ export default function ShortCreator() {
   const [headline, setHeadline] = useState("")
   const [now, setNow] = useState(0)
   const [clip, setClip] = useState<{ url: string; name: string } | null>(null)
+  const [preview, setPreview] = useState<{ image: string; at: number } | null>(null)
+  const [previewing, setPreviewing] = useState(false)
   const boxRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<any>(null)
   const stopAtRef = useRef<number | null>(null)
@@ -86,7 +107,12 @@ export default function ShortCreator() {
     if (clip) URL.revokeObjectURL(clip.url)
   }, [clip])
 
+  useEffect(() => () => {
+    if (preview) URL.revokeObjectURL(preview.image)
+  }, [preview])
+
   const cues = info?.transcript ?? []
+  const words = useMemo(() => (info ? info.transcript.flatMap((c) => c.words) : []), [info])
   const s = parseTime(start)
   const e = parseTime(end)
   const rangeError =
@@ -97,6 +123,37 @@ export default function ShortCreator() {
         : e - s > MAX_CLIP_SECONDS
           ? `Clips are limited to ${MAX_CLIP_SECONDS / 60} minutes`
           : null
+  const moment = rangeError ? null : previewMoment(words, s, e)
+  const still = !info
+    ? ""
+    : preview
+      ? `/api/shorts?url=${info.id}&frame=${preview.at}`
+      : `https://i.ytimg.com/vi/${info.id}/mqdefault.jpg`
+
+  useEffect(() => {
+    if (!info || moment === null) return
+    const controller = new AbortController()
+    const timer = setTimeout(async () => {
+      setPreviewing(true)
+      try {
+        const res = await fetch("/api/shorts", {
+          ...shortRequest(info, words, s, e, { subtitle, overlay, headline }, { preview: true, at: moment }),
+          signal: controller.signal,
+        })
+        if (!res.ok) throw new Error((await res.json()).message)
+        setPreview({ image: URL.createObjectURL(await res.blob()), at: moment })
+      } catch (err: any) {
+        if (err.name !== "AbortError") toast.error(err.message || "Could not render the preview")
+      } finally {
+        if (!controller.signal.aborted) setPreviewing(false)
+      }
+    }, 400)
+    return () => {
+      clearTimeout(timer)
+      controller.abort()
+      setPreviewing(false)
+    }
+  }, [info, words, s, e, moment, subtitle, overlay, headline])
 
   const loadVideo = async () => {
     if (!url.trim() || busy) return
@@ -111,6 +168,7 @@ export default function ShortCreator() {
       setEnd("")
       setAnchor(null)
       setClip(null)
+      setPreview(null)
     } catch (err: any) {
       toast.error(err.message || "Could not load that video")
     } finally {
@@ -136,20 +194,7 @@ export default function ShortCreator() {
     if (!info) return
     setBusy("clip")
     try {
-      const res = await fetch("/api/shorts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: info.id,
-          start: s,
-          end: e,
-          subtitle,
-          overlay,
-          headline,
-          channel: info.channel,
-          words: cues.flatMap((c) => c.words).filter((w) => w.end > s && w.start < e),
-        }),
-      })
+      const res = await fetch("/api/shorts", shortRequest(info, words, s, e, { subtitle, overlay, headline }))
       if (!res.ok) throw new Error((await res.json()).message)
       const name = `${info.title} ${fmt(s)} to ${fmt(e)}.mp4`.replace(/[\\/:*?"<>|]+/g, "-")
       setClip({ url: URL.createObjectURL(await res.blob()), name })
@@ -244,40 +289,67 @@ export default function ShortCreator() {
                     : "Pick a range from the transcript or the player"}
               </p>
 
-              <Picker
-                label="Overlay"
-                options={OVERLAY_STYLES}
-                value={overlay}
-                onChange={setOverlay}
-                render={(id) => <OverlayPreview id={id} thumb={`https://i.ytimg.com/vi/${info.id}/mqdefault.jpg`} />}
-              />
-              {HEADLINE_OVERLAYS.includes(overlay) && (
-                <div>
-                  <label className="block text-sm font-medium mb-1">Headline</label>
-                  <Input
-                    value={headline}
-                    onChange={(ev) => setHeadline(ev.target.value)}
-                    maxLength={150}
-                    className="border-slate-600 rounded-xl"
+              <div className="grid gap-4 md:grid-cols-[1fr_200px]">
+                <div className="min-w-0 space-y-4">
+                  <Picker
+                    label="Overlay"
+                    options={OVERLAY_STYLES}
+                    value={overlay}
+                    onChange={setOverlay}
+                    render={(id) => <OverlayPreview id={id} still={still} />}
+                  />
+                  {HEADLINE_OVERLAYS.includes(overlay) && (
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Headline</label>
+                      <Input
+                        value={headline}
+                        onChange={(ev) => setHeadline(ev.target.value)}
+                        maxLength={150}
+                        className="border-slate-600 rounded-xl"
+                      />
+                    </div>
+                  )}
+                  <Picker
+                    label="Captions"
+                    options={SUBTITLE_STYLES}
+                    value={subtitle}
+                    onChange={setSubtitle}
+                    render={(id) => (
+                      <div
+                        className="flex h-24 items-end justify-center rounded-md bg-cover bg-center px-1 pb-2 text-center text-white"
+                        style={{ backgroundImage: `linear-gradient(transparent 30%,#000 75%),url(${still})` }}
+                      >
+                        <CaptionPreview id={id} />
+                      </div>
+                    )}
                   />
                 </div>
-              )}
-              <Picker
-                label="Captions"
-                options={SUBTITLE_STYLES}
-                value={subtitle}
-                onChange={setSubtitle}
-                render={(id) => (
-                  <div
-                    className="flex h-24 items-center justify-center rounded-md bg-cover bg-center px-1 text-center text-white"
-                    style={{
-                      backgroundImage: `linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url(https://i.ytimg.com/vi/${info.id}/mqdefault.jpg)`,
-                    }}
-                  >
-                    <CaptionPreview id={id} />
+
+                <div>
+                  <p className="mb-2 text-sm font-medium">Preview</p>
+                  <div className="relative aspect-[9/16] w-full overflow-hidden rounded-lg border border-slate-700 bg-black">
+                    {preview ? (
+                      <Image
+                        src={preview.image}
+                        alt="Frame from the selection with the chosen overlay and captions"
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
+                    ) : (
+                      <p className="flex h-full items-center justify-center p-4 text-center text-xs text-gray-500">
+                        {rangeError ? "Pick a range to preview a real frame" : "Rendering preview..."}
+                      </p>
+                    )}
+                    {previewing && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <Loader2 className="animate-spin" />
+                      </div>
+                    )}
                   </div>
-                )}
-              />
+                  {preview && <p className="mt-1 text-xs text-gray-500">Frame at {fmt(preview.at)}</p>}
+                </div>
+              </div>
 
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -374,7 +446,7 @@ function Picker<T extends string>({
   return (
     <div>
       <p className="mb-2 text-sm font-medium">{label}</p>
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+      <div className="grid grid-cols-3 gap-2">
         {options.map((o) => (
           <button
             key={o.id}
@@ -430,8 +502,18 @@ function CaptionPreview({ id }: { id: SubtitleStyle }) {
   return <span className="text-xs text-gray-300">Off</span>
 }
 
-function OverlayPreview({ id, thumb }: { id: OverlayStyle; thumb: string }) {
-  const image = { backgroundImage: `url(${thumb})` }
+const FULL_FRAME = { shade: "top-[50%] bg-[linear-gradient(transparent,#000_46%)]", caption: "bottom-[16%]" }
+
+const LOWER_THIRDS: Record<OverlayStyle, { shade: string; caption: string }> = {
+  clean: FULL_FRAME,
+  headline: FULL_FRAME,
+  progress: FULL_FRAME,
+  cinematic: { shade: "top-[53%] bg-[linear-gradient(transparent,#000_30%)]", caption: "bottom-[18%]" },
+  blur: { shade: "top-[47%] bg-[linear-gradient(transparent,#000_19%)]", caption: "bottom-[25%]" },
+}
+
+function OverlayPreview({ id, still }: { id: OverlayStyle; still: string }) {
+  const image = { backgroundImage: `url(${still})` }
   return (
     <div className="relative mx-auto h-24 w-[54px] overflow-hidden rounded-md bg-black">
       {id === "blur" ? (
@@ -449,6 +531,8 @@ function OverlayPreview({ id, thumb }: { id: OverlayStyle; thumb: string }) {
       ) : (
         <div className="absolute inset-0 bg-cover bg-center" style={image} />
       )}
+      <div className={`absolute inset-x-0 bottom-0 ${LOWER_THIRDS[id].shade}`} />
+      <div className={`absolute inset-x-2.5 h-1 rounded-sm bg-[#FFD400] ${LOWER_THIRDS[id].caption}`} />
       {id === "headline" && <div className="absolute inset-x-1.5 top-2 h-2.5 rounded-sm bg-white" />}
       {id === "progress" && (
         <>

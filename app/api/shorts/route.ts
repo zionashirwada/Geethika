@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { execFile } from 'child_process'
 import { createReadStream, existsSync } from 'fs'
-import { mkdtemp, readdir, rm, stat, writeFile } from 'fs/promises'
+import { mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { Readable } from 'stream'
@@ -19,15 +19,23 @@ import {
 
 export const dynamic = 'force-dynamic'
 
+type Plan = { width: number; height: number; x: number; commands: string }
+
 const MAX_CLIP_SECONDS = 300
 const ENCODE = '-c:v libx264 -crf 18 -preset medium -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart'
 const INTERMEDIATE = '-c:v libx264 -crf 14 -preset ultrafast -pix_fmt yuv420p -c:a aac -b:a 192k'
+const PREVIEW_FORMAT = 'bv*[height<=720][vcodec^=avc1]/bv*[height<=720]/bv*'
 const REFRAME = join(process.cwd(), 'scripts', 'reframe.py')
 const FFMPEG_FULL = '/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg'
+const FRAMES = join(tmpdir(), 'geethika-frames')
 const BLUR_FILL =
   '[0:v]scale=1080:-2:flags=lanczos,split[fg][bg];' +
   '[bg]scale=-2:480,crop=270:480,gblur=sigma=12,eq=brightness=-0.12,scale=1080:1920[back];' +
   '[back][fg]overlay=0:(H-h)/2'
+
+const streams = new Map<string, string>()
+const frames = new Map<string, Promise<string>>()
+const plans = new Map<string, Promise<Plan>>()
 
 const run = (cmd: string, args: string[], cwd?: string) =>
   promisify(execFile)(cmd, args, { maxBuffer: 1 << 26, cwd })
@@ -47,32 +55,46 @@ const fail = (e: any) =>
     { status: 500 },
   )
 
-async function reframe(input: string, dir: string, width: number, height: number) {
-  const plan = JSON.parse(
-    (await run('uv', ['run', '--quiet', '--no-project', '--with', 'opencv-python-headless<6', 'python', REFRAME, input, String(width / height)]))
-      .stdout,
-  )
-  await writeFile(join(dir, 'crop.txt'), plan.commands)
+function cached<T>(map: Map<string, Promise<T>>, key: string, make: () => Promise<T>) {
+  if (!map.has(key)) {
+    map.set(
+      key,
+      make().catch((e) => {
+        map.delete(key)
+        throw e
+      }),
+    )
+  }
+  return map.get(key)!
+}
+
+const ratioFor = (overlay: OverlayStyle) => (overlay === 'cinematic' ? 4 / 5 : 9 / 16)
+
+async function cropPlan(input: string, ratio: number): Promise<Plan> {
+  const args = ['run', '--quiet', '--no-project', '--with', 'opencv-python-headless<6', 'python', REFRAME, input, String(ratio)]
+  return JSON.parse((await run('uv', args)).stdout)
+}
+
+function layout(overlay: OverlayStyle, plan?: Plan, track = false) {
+  if (!plan) return BLUR_FILL
+  const [w, h] = overlay === 'cinematic' ? [1080, 1350] : [1080, 1920]
   return (
-    `[0:v]sendcmd=f=crop.txt,crop=${plan.width}:${plan.height}:${plan.x}:0,` +
-    `scale=${width}:${height}:force_original_aspect_ratio=increase:flags=lanczos,crop=${width}:${height}`
+    `[0:v]${track ? 'sendcmd=f=crop.txt,' : ''}crop=${plan.width}:${plan.height}:${plan.x}:0,` +
+    `scale=${w}:${h}:force_original_aspect_ratio=increase:flags=lanczos,crop=${w}:${h}` +
+    (overlay === 'cinematic' ? ',pad=1080:1920:0:285' : '')
   )
 }
 
 async function render(input: string, dir: string, overlay: OverlayStyle, ass: string) {
-  const video =
-    overlay === 'blur'
-      ? BLUR_FILL
-      : overlay === 'cinematic'
-        ? `${await reframe(input, dir, 1080, 1350)},pad=1080:1920:0:285`
-        : await reframe(input, dir, 1080, 1920)
+  const plan = overlay === 'blur' ? undefined : await cropPlan(input, ratioFor(overlay))
+  if (plan) await writeFile(join(dir, 'crop.txt'), plan.commands)
   await writeFile(join(dir, 'captions.ass'), ass)
   await run(
     FFMPEG_FULL,
     [
       '-v', 'error',
       '-i', input,
-      '-filter_complex', `${video},setsar=1,ass=captions.ass[v]`,
+      '-filter_complex', `${layout(overlay, plan, true)},setsar=1,ass=captions.ass[v]`,
       '-map', '[v]',
       '-map', '0:a?',
       ...ENCODE.split(' '),
@@ -84,11 +106,75 @@ async function render(input: string, dir: string, overlay: OverlayStyle, ass: st
   return join(dir, 'short.mp4')
 }
 
+const frameAt = (id: string, at: number) =>
+  cached(frames, `${id}-${at.toFixed(1)}`, async () => {
+    const base = join(FRAMES, `${id}-${at.toFixed(1)}`)
+    if (existsSync(`${base}.jpg`)) return base
+    const url = streams.get(id) ?? (await ytdlp(['-f', PREVIEW_FORMAT, '-g', watchUrl(id)])).stdout.trim().split('\n')[0]
+    streams.set(id, url)
+    await mkdir(FRAMES, { recursive: true })
+    try {
+      await run('ffmpeg', [
+        '-v', 'error', '-y',
+        '-ss', at.toFixed(1),
+        '-i', url,
+        '-frames:v', '1',
+        '-vf', "scale=-2:'min(ih,1080)'",
+        '-c:v', 'libx264', '-preset', 'ultrafast', '-qp', '0', '-pix_fmt', 'yuv420p',
+        `${base}.mp4`,
+      ])
+    } catch (e) {
+      streams.delete(id)
+      throw e
+    }
+    await run('ffmpeg', ['-v', 'error', '-y', '-i', `${base}.mp4`, '-frames:v', '1', '-q:v', '2', `${base}.jpg`])
+    return base
+  })
+
+async function preview(id: string, at: number, offset: number, overlay: OverlayStyle, ass: string) {
+  const frame = `${await frameAt(id, at)}.mp4`
+  const ratio = ratioFor(overlay)
+  const plan = overlay === 'blur' ? undefined : await cached(plans, `${frame}:${ratio}`, () => cropPlan(frame, ratio))
+  const dir = await mkdtemp(join(tmpdir(), 'preview-'))
+  try {
+    await writeFile(join(dir, 'captions.ass'), ass)
+    await run(
+      FFMPEG_FULL,
+      [
+        '-v', 'error',
+        '-i', frame,
+        '-filter_complex', `${layout(overlay, plan)},setsar=1,setpts=PTS+${offset.toFixed(3)}/TB,ass=captions.ass,scale=540:960[v]`,
+        '-map', '[v]',
+        '-frames:v', '1',
+        '-q:v', '3',
+        'preview.jpg',
+      ],
+      dir,
+    )
+    return await readFile(join(dir, 'preview.jpg'))
+  } finally {
+    await rm(dir, { recursive: true, force: true })
+  }
+}
+
 const isWord = (w: any): w is Word => Number.isFinite(w?.start) && Number.isFinite(w?.end) && typeof w?.text === 'string'
 
+const jpeg = (data: Buffer) => new Response(data, { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'private, max-age=3600' } })
+
 export async function GET(request: Request) {
-  const id = videoId(new URL(request.url).searchParams.get('url') ?? '')
+  const params = new URL(request.url).searchParams
+  const id = videoId(params.get('url') ?? '')
   if (!id) return NextResponse.json({ message: 'That does not look like a YouTube link' }, { status: 400 })
+
+  if (params.has('frame')) {
+    const at = Number(params.get('frame'))
+    if (!(at >= 0)) return NextResponse.json({ message: 'Invalid frame time' }, { status: 400 })
+    try {
+      return jpeg(await readFile(`${await frameAt(id, at)}.jpg`))
+    } catch (e) {
+      return fail(e)
+    }
+  }
 
   try {
     const info = JSON.parse((await ytdlp(['-J', watchUrl(id)])).stdout)
@@ -105,6 +191,10 @@ export async function GET(request: Request) {
           .then(json3ToCues)
           .catch(() => [])
       : []
+    const stream = (info.formats ?? [])
+      .filter((f: any) => f.protocol === 'https' && f.acodec === 'none' && f.vcodec?.startsWith('avc1') && f.height <= 720)
+      .sort((a: any, b: any) => b.height - a.height)[0]
+    if (stream?.url) streams.set(id, stream.url)
 
     return NextResponse.json({
       id,
@@ -144,6 +234,15 @@ export async function POST(request: Request) {
     headline: String(body.headline ?? '').slice(0, 150),
     channel: String(body.channel ?? '').slice(0, 80),
   })
+
+  if (body.preview) {
+    const at = Number.isFinite(body.at) && body.at >= start && body.at <= end ? Math.round(body.at * 10) / 10 : Math.round((start + end) * 5) / 10
+    try {
+      return jpeg(await preview(id, at, at - start, overlay, ass))
+    } catch (e) {
+      return fail(e)
+    }
+  }
 
   const dir = await mkdtemp(join(tmpdir(), 'short-'))
   try {

@@ -68,6 +68,15 @@ export function clipWords(words: Word[], from: number, to: number): Word[] {
     .map((w) => ({ start: round(Math.max(0, w.start - from)), end: round(Math.min(to, w.end) - from), text: w.text }))
 }
 
+export function previewMoment(words: Word[], start: number, end: number): number {
+  const mid = (start + end) / 2
+  const near = words
+    .filter((w) => w.start >= start && w.start < end)
+    .sort((a, b) => Math.abs(a.start - mid) - Math.abs(b.start - mid))[0]
+  const t = near ? near.start + Math.min(0.2, (near.end - near.start) / 2) : mid
+  return Math.min(end, Math.max(start, Math.round(t * 10) / 10))
+}
+
 export function fmt(seconds: number): string {
   const t = Math.round(seconds * 10) / 10
   const h = Math.floor(t / 3600)
@@ -85,14 +94,24 @@ export function parseTime(text: string): number {
 const BRAND = '#D63736'
 
 const CAPTIONS = {
-  bold: { font: 'Avenir Next', weight: 900, size: 84, color: '#FFFFFF', accent: '#FFD400', outline: 7, shadow: 3, box: '', words: 3, upper: true },
-  pop: { font: 'Impact', weight: 400, size: 132, color: '#FFFFFF', accent: '#FFD400', outline: 9, shadow: 4, box: '', words: 1, upper: true },
-  karaoke: { font: 'Avenir Next', weight: 700, size: 72, color: '#FFFFFF', accent: '#FF4B3E', outline: 5, shadow: 2, box: '', words: 5, upper: false },
+  bold: { font: 'Avenir Next Heavy', weight: 0, size: 84, color: '#FFFFFF', accent: '#FFD400', outline: 7, shadow: 3, box: '', words: 3, upper: true },
+  pop: { font: 'Impact', weight: 0, size: 132, color: '#FFFFFF', accent: '#FFD400', outline: 9, shadow: 4, box: '', words: 1, upper: true },
+  karaoke: { font: 'Avenir Next Bold', weight: 0, size: 72, color: '#FFFFFF', accent: '#FF4B3E', outline: 5, shadow: 2, box: '', words: 5, upper: false },
   boxed: { font: 'Helvetica Neue', weight: 700, size: 62, color: '#FFFFFF', accent: '#FFFFFF', outline: 16, shadow: 0, box: '#000000', words: 6, upper: false },
-  minimal: { font: 'Avenir Next', weight: 500, size: 62, color: '#FFFFFF', accent: '#FFFFFF', outline: 0, shadow: 3, box: '', words: 7, upper: false },
+  minimal: { font: 'Avenir Next Medium', weight: 0, size: 62, color: '#FFFFFF', accent: '#FFFFFF', outline: 0, shadow: 3, box: '', words: 7, upper: false },
 }
 
-const CAPTION_Y: Record<OverlayStyle, number> = { clean: 1480, headline: 1480, progress: 1460, cinematic: 1560, blur: 1500 }
+const CAPTION_Y: Record<OverlayStyle, number> = { clean: 1640, headline: 1640, progress: 1620, cinematic: 1590, blur: 1460 }
+
+const SHADE_BAND = 8
+
+const SHADES: Record<OverlayStyle, { fade: number; solid: number }> = {
+  clean: { fade: 960, solid: 1400 },
+  headline: { fade: 960, solid: 1400 },
+  progress: { fade: 960, solid: 1400 },
+  cinematic: { fade: 1020, solid: 1290 },
+  blur: { fade: 900, solid: 1090 },
+}
 
 const HEADS: Partial<Record<OverlayStyle, { an: number; y: number; size: number; color: string; box: string; shadow: number }>> = {
   headline: { an: 8, y: 190, size: 60, color: '#000000', box: '#FFFFFF', shadow: 0 },
@@ -150,35 +169,47 @@ export function buildAss(o: {
     b > a && events.push(`Dialogue: ${layer},${assTime(a)},${assTime(b)},${name},,0,0,0,,${text}`)
 
   if (o.subtitle !== 'none') {
-    const pos = `\\an2\\pos(540,${CAPTION_Y[o.overlay]})`
+    const pos = `\\an2\\pos(540,${CAPTION_Y[o.overlay]})\\b${cap.weight}`
     const say = (w: Word) => plain(cap.upper ? w.text.toUpperCase() : w.text)
     for (const chunk of chunks(o.words.filter((w) => plain(w.text)), cap.words)) {
       const a = chunk[0].start
       const b = chunk[chunk.length - 1].end
       const nextStart = (i: number) => (i + 1 < chunk.length ? chunk[i + 1].start : b)
       if (o.subtitle === 'karaoke') {
-        add(0, a, b, 'Cap', `{${pos}}` + chunk.map((w, i) => `{\\kf${Math.round((nextStart(i) - w.start) * 100)}}${say(w)}`).join(' '))
+        add(4, a, b, 'Cap', `{${pos}}` + chunk.map((w, i) => `{\\kf${Math.round((nextStart(i) - w.start) * 100)}}${say(w)}`).join(' '))
       } else if (o.subtitle === 'bold') {
         chunk.forEach((w, i) =>
-          add(0, w.start, nextStart(i), 'Cap', `{${pos}}` + chunk
-            .map((x, j) => (j === i ? `{\\c${tagColor(cap.accent)}\\fscx112\\fscy112}${say(x)}{\\r}` : say(x)))
+          add(4, w.start, nextStart(i), 'Cap', `{${pos}}` + chunk
+            .map((x, j) =>
+              j === i
+                ? `{\\c${tagColor(cap.accent)}\\fscx112\\fscy112}${say(x)}{\\c${tagColor(cap.color)}\\fscx100\\fscy100}`
+                : say(x),
+            )
             .join(' ')),
         )
       } else if (o.subtitle === 'pop') {
         const accent = say(chunk[0]).length >= 6 ? `\\c${tagColor(cap.accent)}` : ''
-        add(0, a, b, 'Cap', `{${pos}${accent}\\fscx60\\fscy60\\t(0,80,\\fscx112\\fscy112)\\t(80,160,\\fscx100\\fscy100)}${chunk.map(say).join(' ')}`)
+        add(4, a, b, 'Cap', `{${pos}${accent}\\fscx60\\fscy60\\t(0,80,\\fscx112\\fscy112)\\t(80,160,\\fscx100\\fscy100)}${chunk.map(say).join(' ')}`)
       } else {
-        add(0, a, b, 'Cap', `{${pos}\\fad(60,60)}${chunk.map(say).join(' ')}`)
+        add(4, a, b, 'Cap', `{${pos}\\fad(60,60)}${chunk.map(say).join(' ')}`)
       }
     }
   }
 
-  if (head && plain(o.headline)) add(1, 0, o.duration, 'Head', `{\\an${head.an}\\pos(540,${head.y})}${plain(o.headline)}`)
-  if (tag && plain(o.channel)) add(1, 0, o.duration, 'Tag', `{\\an${tag.an}\\pos(${tag.x},${tag.y})}${plain(o.channel)}`)
+  const shade = SHADES[o.overlay]
+  const rect = (h: number) => `m 0 0 l 1080 0 l 1080 ${h} l 0 ${h}`
+  for (let y = shade.fade; y < shade.solid; y += SHADE_BAND) {
+    const p = (y + SHADE_BAND / 2 - shade.fade) / (shade.solid - shade.fade)
+    const alpha = Math.round(255 * (1 - p * p * (3 - 2 * p)))
+    add(0, 0, o.duration, 'Bar', `{\\an7\\pos(0,${y})\\p1\\1c&H000000&\\1a&H${alpha.toString(16).padStart(2, '0').toUpperCase()}&}${rect(SHADE_BAND)}{\\p0}`)
+  }
+  add(0, 0, o.duration, 'Bar', `{\\an7\\pos(0,${shade.solid})\\p1\\1c&H000000&}${rect(1920 - shade.solid)}{\\p0}`)
+
+  if (head && plain(o.headline)) add(3, 0, o.duration, 'Head', `{\\an${head.an}\\pos(540,${head.y})}${plain(o.headline)}`)
+  if (tag && plain(o.channel)) add(3, 0, o.duration, 'Tag', `{\\an${tag.an}\\pos(${tag.x},${tag.y})}${plain(o.channel)}`)
   if (o.overlay === 'progress') {
-    const bar = 'm 0 0 l 1080 0 l 1080 16 l 0 16'
-    add(2, 0, o.duration, 'Bar', `{\\an7\\pos(0,1904)\\p1\\1c&HFFFFFF&\\1a&HA0&}${bar}{\\p0}`)
-    add(3, 0, o.duration, 'Bar', `{\\an7\\pos(0,1904)\\p1\\1c${tagColor(BRAND)}\\clip(0,1900,0,1920)\\t(0,${Math.round(o.duration * 1000)},\\clip(0,1900,1080,1920))}${bar}{\\p0}`)
+    add(1, 0, o.duration, 'Bar', `{\\an7\\pos(0,1904)\\p1\\1c&HFFFFFF&\\1a&HA0&}${rect(16)}{\\p0}`)
+    add(2, 0, o.duration, 'Bar', `{\\an7\\pos(0,1904)\\p1\\1c${tagColor(BRAND)}\\clip(0,1900,0,1920)\\t(0,${Math.round(o.duration * 1000)},\\clip(0,1900,1080,1920))}${rect(16)}{\\p0}`)
   }
 
   const black = assColor('#000000')
@@ -195,8 +226,8 @@ export function buildAss(o: {
     o.subtitle === 'karaoke'
       ? style('Cap', cap.font, cap.size, cap.weight, assColor(cap.accent), assColor(cap.color), black, assColor('#000000', 0x80), false, cap.outline, cap.shadow)
       : style('Cap', cap.font, cap.size, cap.weight, assColor(cap.color), assColor(cap.color), cap.box ? assColor(cap.box, 0x50) : black, assColor('#000000', 0x80), !!cap.box, cap.outline, cap.shadow),
-    style('Head', 'Avenir Next', head?.size ?? 60, 800, assColor(head?.color ?? '#FFFFFF'), black, head?.box ? assColor(head.box) : black, assColor('#000000', 0x60), !!head?.box, head?.box ? 18 : 0, head?.shadow ?? 0),
-    style('Tag', 'Avenir Next', 40, 600, assColor(tag?.color ?? '#FFFFFF'), black, tag?.box ? assColor(tag.box, 0x60) : black, black, !!tag?.box, tag?.box ? 12 : 0, 0),
+    style('Head', 'Avenir Next Heavy', head?.size ?? 60, 0, assColor(head?.color ?? '#FFFFFF'), black, head?.box ? assColor(head.box) : black, assColor('#000000', 0x60), !!head?.box, head?.box ? 18 : 0, head?.shadow ?? 0),
+    style('Tag', 'Avenir Next Demi Bold', 40, 0, assColor(tag?.color ?? '#FFFFFF'), black, tag?.box ? assColor(tag.box, 0x60) : black, black, !!tag?.box, tag?.box ? 12 : 0, 0),
     style('Bar', 'Avenir Next', 20, 400, assColor('#FFFFFF'), black, black, black, false, 0, 0),
     '',
     '[Events]',
